@@ -8,6 +8,16 @@ OVERVIEW
 2.	make it easier to understand the interactions of game objects: more mouseover actions and tooltips, use game XML data - not hardcoded blurbs
 3.	no changes to gameplay, no effect on game saves, can earn achievements, works in multiplayer, and no additional information that is not already available somewhere
 
+----------------------
+INSTRUCTIONS FOR LINUX
+----------------------
+
+1.Basically copy the ui_bc1 folder into your civ5 assets/dlc folder. 
+
+
+cd ~/.steam/steam/SteamApps/common/Sid\ Meier\'s\ Civilization\ V/steamassets/assets/dlc/
+git clone https://github.com/vans163/ui_bc1.git
+
 ------------
 INSTRUCTIONS
 ------------
