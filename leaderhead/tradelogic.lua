@@ -176,6 +176,14 @@ function LeaderMessageHandler( iPlayer, iDiploUIState, szLeaderMessage, iAnimati
 			--print("DiploUIState: AI making offer");
 			bClearTableAndDisplayDeal = true;
 			g_bAIMakingOffer = true;
+
+            -- ignore trade requests
+            print("ai offered to trade");
+            bMyMode = false;
+            UIManager:DequeuePopup( ContextPtr );
+            UI.SetLeaderHeadRootUp( false );
+            UI.RequestLeaveLeader();
+            do return end
 		elseif (g_iDiploUIState == DiploUIStateTypes.DIPLO_UI_STATE_TRADE_AI_ACCEPTS_OFFER) then
 			--print("DiploUIState: AI accepted offer");
 			g_iConcessionsPreviousDiploUIState = -1;		-- Clear out the fact that we were offering concessions if the AI has agreed to a deal

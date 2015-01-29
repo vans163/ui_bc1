@@ -8,6 +8,22 @@ OVERVIEW
 2.	make it easier to understand the interactions of game objects: more mouseover actions and tooltips, use game XML data - not hardcoded blurbs
 3.	no changes to gameplay, no effect on game saves, can earn achievements, works in multiplayer, and no additional information that is not already available somewhere
 
+-------------------
+CHANGES VS ORIGINAL
+-------------------
+
+(January 28th, 2013)
+Gift Unit to city-state from leaderpanel, appears while having Arsonal of Democracy. (custom gift icon needed)
+
+Purchase landsknecht from banner, second click selects the landsknecht in the city, so doubleclick for best effect. (A single click ATM cannot happen because city:PurchaseUnit(..) returns before the unit is purchased and offers no callback, *shame firaxis hire better devs*, so calling selectUnit right after fails, hence the need to doubleclick. Custom landsknecht icon needed)
+
+Removed "Are you sure?" popup for gifting a unit, and building over an improvement.
+Removed recommended worker suggestions. (useless because often the game will recommend building a road when your standing on an unimproved luxury, and if you misclick you will waste a turn)
+
+Ignore all trade requests from AI. 50% complete (Cannot figure out how to prevent the leaderscreen for poping up for a split second). AI often requests to trade with you when you can see what they have anyways. Significantly slowing down turn times.
+
+Show tradeable Luxuries/Strategics even with only 1 copy for yourself.
+
 ----------------------
 INSTRUCTIONS FOR LINUX
 ----------------------
@@ -17,6 +33,16 @@ INSTRUCTIONS FOR LINUX
 
 cd ~/.steam/steam/SteamApps/common/Sid\ Meier\'s\ Civilization\ V/steamassets/assets/dlc/
 git clone https://github.com/vans163/ui_bc1.git
+
+
+EXTRA:
+Dont forget to check permissions on the files. Everything should be readable by the owning user of the steam folder.
+
+chown steamuser:steamuser ui_bc1
+chown -R steamuser:steamuser ui_bc1
+chmod -R 755 ui_bc1
+
+restart steam + civ5 completely.
 
 ------------
 INSTRUCTIONS
@@ -34,7 +60,7 @@ http://www.youtube.com/watch?v=Ud_wH4Q8W9I
 		OR
 		in case of MAC AppStore installation: /Applications/Civilization V Campaign Edition.app
 5.	remove any previous version of EUI DLC (delete the entire UI_bc1 folder if one already exists, don't just overwrite)
-6.	extract from the downloaded zip and copy the UI_bc1 folder to the game's DLC folder. ONLY if your OS is Linux, all of these files / folders must be renamed to lower case equivalent ([URL="http://forums.civfanatics.com/showthread.php?p=13268294#post13268294"]mjkoo wrote a script to do that[/URL])
+6.	extract from the downloaded zip and copy the UI_bc1 folder to the game's DLC folder. ONLY if your OS is Linux, all of these files / folders must be renamed to lower case equivalent ( find ui_bc1 -depth -exec rename 's/(.*)\/([^\/]*)/$1\/\L$2/' {} \; )
 7.	EUI DLC is modular: if there are things you don't like or need or which conflict with mods you want to use (check the known "mods compatibility" list at http://forums.civfanatics.com/showthread.php?p=12847246), you can disable that part by removing the corresponding subfolder from the UI_bc1 folder. Check the feature list below to determine which module includes which feature to be disabled. Please note that EUI DLC will break if its Art* or Core folder are removed.
 8.	in the game menu - options - interface options - UNcheck "single player score list" if you want to use the civilization ribbon and bundled notifications
 9.	in the game menu - options - game options - set the desired delays (or no delay) for the map plot mouse over help / tooltips to appear using the big horizontal sliders (there are now 2 delays - basic and detailed plot help)
