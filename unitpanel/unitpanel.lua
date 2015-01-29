@@ -1014,18 +1014,18 @@ local function UpdateUnitActions( unit )
 		g_isWorkerActionPanelOpen = true
 		stackSize = Controls.WorkerActionPanel:GetSize()
 		local rbOffset = 0
-		if recommendedBuild then
-			rbOffset = 60
-			if OptionsManager.GetSmallUIAssets() and not UI.IsTouchScreenEnabled() then
-				rbOffset = 60
-			end
-			Controls.RecommendedActionDivider:SetHide( false )
-			Controls.RecommendedActionButton:SetHide( false )
-		else
+		--if recommendedBuild then
+		--	rbOffset = 60
+		--	if OptionsManager.GetSmallUIAssets() and not UI.IsTouchScreenEnabled() then
+		--		rbOffset = 60
+		--	end
+		--	Controls.RecommendedActionDivider:SetHide( false )
+		--	Controls.RecommendedActionButton:SetHide( false )
+		--else
 			rbOffset = 0
 			Controls.RecommendedActionDivider:SetHide( true )
 			Controls.RecommendedActionButton:SetHide( true )
-		end
+		--end
 		if hasPromotion then
 			Controls.WorkerText:SetHide(true)
 			Controls.PromotionText:SetHide(false)

@@ -1614,6 +1614,7 @@ CivPanel
 					</Image>
 				</Container>
 				<TextButton ID="Spy" Anchor="R,C" String="[ICON_SPY]" />
+                <TextButton ID="GiftUnit" Anchor="R,C" String="[ICON_INFLUENCE]" />
 				<TextButton ID="Quests" Anchor="R,C" />
 			</Stack>
 		</Button>

@@ -105,6 +105,7 @@
 				<TextButton ID="DiplomatIcon" String="[ICON_DIPLOMAT]" Hidden="1"/>
 				<TextButton ID="PuppetIcon" String="[ICON_PUPPET]"/>
 				<TextButton ID="FocusIcon"/>
+                <TextButton ID="LandsknechtIcon" String="[ICON_GOLD]"/>
 				<Label ID="QuestIcons"/>
 				<Label ID="RazingIcon" String="[ICON_RAZING]"/>
 				<Label ID="ResistanceIcon" String="[ICON_RESISTANCE]"/>

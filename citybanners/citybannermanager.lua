@@ -851,6 +851,53 @@ local function InitBannerCallbacks( cityBanner )
 	cityBanner.SpyIcon:RegisterCallback( Mouse.eLClick, EspionagePopup )
 end
 
+function hasPolicy(pPlayer, policyType)
+    for policy in GameInfo.Policies() do
+        if policy.Type == policyType then
+            return pPlayer:HasPolicy(policy.ID);
+        end
+    end
+    return false;
+end
+
+function OnLandsknechtPurchaseClick( plotIndex )
+    local plot = Map.GetPlotByIndex( plotIndex )
+    local city = plot and plot:GetPlotCity()
+    if not city then
+        do return end
+    end
+
+    local cityOwnerID = city:GetOwner()
+    ----------- Venice exception -----------
+
+    if cityOwnerID == g_activePlayerID
+        and ( not city:IsPuppet() or ( bnw_mode and g_activePlayer:MayNotAnnex() ) )
+        then
+
+        local unitID = GameInfo.Units.UNIT_GERMAN_LANDSKNECHT.ID
+        if city:IsCanPurchase( true, true, unitID, -1, -1, YieldTypes.YIELD_GOLD ) then
+            Game.CityPurchaseUnit( city, unitID, YieldTypes.YIELD_GOLD )
+
+            local cityID = city:GetID()
+            Events.SpecificCityInfoDirty( cityOwnerID, cityID, CityUpdateTypes.CITY_UPDATE_TYPE_BANNER )
+            Events.SpecificCityInfoDirty( cityOwnerID, cityID, CityUpdateTypes.CITY_UPDATE_TYPE_PRODUCTION )
+            Events.AudioPlay2DSound( "AS2D_INTERFACE_CITY_SCREEN_PURCHASE" )
+        end
+
+        --Select the landsknecht on the second click
+        local pUnit = nil;
+        local unitCount = plot:GetNumUnits();
+                
+        for i = 0, unitCount - 1, 1
+        do
+            local pFoundUnit = plot:GetUnit(i);
+            if (pFoundUnit:GetUnitType() == GameInfo.Units.UNIT_GERMAN_LANDSKNECHT.ID) then
+                UI.SelectUnit(pFoundUnit);
+            end
+        end
+    end
+end
+
 -------------------------------------------------
 -- Update banners to reflect latest city info
 -------------------------------------------------
@@ -908,10 +955,12 @@ local function RefreshCityBannersNow()
 						cityBanner.CityBannerProductionButton:RegisterCallback( Mouse.eRClick, OnProdRClick )
 						cityBanner.CityRangeStrikeButton:RegisterCallback( Mouse.eLClick, OnCityRangeStrikeButtonClick )
 						cityBanner.PuppetIcon:RegisterCallback( Mouse.eLClick, AnnexPopup )
-						InitBannerCallbacks( cityBanner )
+						cityBanner.LandsknechtIcon:RegisterCallback( Mouse.eLClick, OnLandsknechtPurchaseClick )
+                        InitBannerCallbacks( cityBanner )
 					end
 					cityBanner.PuppetIcon:SetVoid1( plotIndex )
 					cityBanner.PopulationBox:SetVoid1( plotIndex )
+                    cityBanner.LandsknechtIcon:SetVoid1( plotIndex )
 					cityBanner.CityRangeStrikeButton:SetVoid1( plotIndex )
 					cityBanner.CityBannerProductionButton:SetVoid1( plotIndex )
 					cityBanner.CityBannerProductionButton:SetDisabled( true )
@@ -1129,6 +1178,16 @@ local function RefreshCityBannersNow()
 				else
 					cityBanner.ConnectedIcon:SetHide( true )
 				end
+
+                --POLICY_ARSENAL_DEMOCRACY
+                -- Landsknecht purchasable?
+                local hasLandsknecht = cityOwner:HasPolicy(GameInfo.Policies.POLICY_TRADE_UNIONS.ID)
+                if hasLandsknecht then
+                    cityBanner.LandsknechtIcon:SetHide( false )
+                else
+                    cityBanner.LandsknechtIcon:SetHide( true )
+                end
+
 
 				-- Demand resource / King day ?
 				local resource = GameInfo.Resources[city:GetResourceDemanded()]

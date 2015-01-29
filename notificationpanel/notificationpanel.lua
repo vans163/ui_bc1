@@ -899,6 +899,11 @@ local function FindPlayer( controlTable, control )
 	return Players[ playerID ], playerID
 end
 
+local function GiftUnit2 ( g_minorCivID )
+    UI.SetInterfaceMode( InterfaceModeTypes.INTERFACEMODE_GIFT_UNIT )
+    UI.SetInterfaceModeValue( g_minorCivID )
+end
+
 
 local g_civListInstanceToolTips = { -- the tooltip function names need to match associated instance control ID defined in xml
 
@@ -1360,7 +1365,9 @@ local function UpdateCivListNow()
 				else
 					instance.Gold:SetText()
 				end
-				local minKeepLuxuries = 1
+
+                --Display all lux even if 1 copy
+				local minKeepLuxuries = 0
 				-- Is reasonable trade possible ?
 				if player:GetMajorCivApproach( g_activePlayerID ) >= MajorCivApproachTypes.MAJOR_CIV_APPROACH_GUARDED then
 					-- Luxuries available from them
@@ -1436,6 +1443,15 @@ local function UpdateCivListNow()
 				instance.Ally:SetHide(true)
 			end
 
+            -- Update Can Gift Unit. BNW only?
+            if bnw_mode and Players[g_activePlayerID]:HasPolicy(GameInfo.Policies.POLICY_ARSENAL_DEMOCRACY.ID) then
+                if minorPlayer:GetIncomingUnitCountdown(g_activePlayerID) >= 0 then
+                    instance.GiftUnit:SetHide( true )
+                else
+                    instance.GiftUnit:SetHide( false )
+                end
+            end
+
 			-- Update Spies
 			instance.Spy:SetHide( not spies[ minorPlayerID ] )
 
@@ -1508,6 +1524,13 @@ for playerID = 0, GameDefines.MAX_CIV_PLAYERS-1 do
 			-- Setup icons
 			instance.StatusIcon:SetTexture(GameInfoCache.MinorCivTraits[GameInfoCache.MinorCivilizations[player:GetMinorCivType()].MinorCivTrait].TraitIcon)
 --			instance.StatusIcon:SetColor( PrimaryColors[playerID] )
+
+            -- Register Gift Unit. BNW only?
+            if bnw_mode then
+                instance.GiftUnit:RegisterCallback( Mouse.eLClick, GiftUnit2 )
+                instance.GiftUnit:SetVoid1( playerID )
+                instance.GiftUnit:SetToolTipString( "Gift a Unit" )
+            end
 		else
 
 			-- Create instance
