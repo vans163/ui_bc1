@@ -24,6 +24,10 @@ Ignore all trade requests from AI. 50% complete (Cannot figure out how to preven
 
 Show tradeable Luxuries/Strategics even with only 1 copy for yourself.
 
+TODO:
+Trade/Loan gold and Trade lux/strategics from the leader panel (50% complete, Leader UI popup cannot be avoided atm, leader panel icon menu is messed up and TextButtons break / get click throughed)
+
+
 ----------------------
 INSTRUCTIONS FOR LINUX
 ----------------------

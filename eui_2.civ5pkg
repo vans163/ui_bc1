@@ -32,7 +32,9 @@
 			<Directory>ToolTips</Directory>
 			<Directory>TopPanel</Directory>
 			<Directory>LeaderHead</Directory>
-			<Directory>UnitPanel</Directory>
+            <Directory>UnitPanel</Directory>
+            <Directory>InGame</Directory>
+            <Directory>PopUps</Directory>
 		</Skin>
 	</UISkin>
 
