@@ -177,13 +177,16 @@ function LeaderMessageHandler( iPlayer, iDiploUIState, szLeaderMessage, iAnimati
 			bClearTableAndDisplayDeal = true;
 			g_bAIMakingOffer = true;
 
-            -- ignore trade requests
-            print("ai offered to trade");
-            bMyMode = false;
-            UIManager:DequeuePopup( ContextPtr );
-            UI.SetLeaderHeadRootUp( false );
-            UI.RequestLeaveLeader();
-            do return end
+            if AIOfferingLux() then
+                -- ignore lux/strategic trade requests
+                print("ai offered to trade");
+                bMyMode = false;
+                UIManager:DequeuePopup( ContextPtr );
+                UI.SetLeaderHeadRootUp( false );
+                UI.RequestLeaveLeader();
+                do return end
+            end
+
 		elseif (g_iDiploUIState == DiploUIStateTypes.DIPLO_UI_STATE_TRADE_AI_ACCEPTS_OFFER) then
 			--print("DiploUIState: AI accepted offer");
 			g_iConcessionsPreviousDiploUIState = -1;		-- Clear out the fact that we were offering concessions if the AI has agreed to a deal
@@ -1893,7 +1896,61 @@ function ResizeStacks()
 
 end
 
+function AIOfferingLux()
+    g_Deal:ResetIterator();
+    if bnw_mode then
+        itemType, duration, finalTurn, data1, data2, data3, flag1, fromPlayer = g_Deal:GetNextItem();
+    else
+        itemType, duration, finalTurn, data1, data2, fromPlayer = g_Deal:GetNextItem();
+    end
+    local iNumItemsFromUs = 0;
+    local iNumItemsFromThem = 0;
+    local goldFromUs = 0;
+    local goldFromThem = 0;
+    local luxFromUs = 0;
 
+    if( itemType ~= nil ) then
+    repeat
+        local bFromUs = false;
+
+        --print("Adding trade item to active deal: " .. itemType);
+        if( fromPlayer == Game.GetActivePlayer() ) then
+            bFromUs = true;
+            iNumItemsFromUs = iNumItemsFromUs + 1;
+        else
+            iNumItemsFromThem = iNumItemsFromThem + 1;
+        end
+	
+	       if( TradeableItems.TRADE_ITEM_GOLD == itemType || TradeableItems.TRADE_ITEM_GOLD_PER_TURN == itemType )
+            if (bFromUs ) then
+                goldFromUs = 1;
+            else
+                goldFromThem = 1;
+            end
+        end
+
+        if( TradeableItems.TRADE_ITEM_RESOURCES == itemType && iNumItemsFromUs == 1 ) then
+            if( bFromUs ) then
+                luxFromUs = 1;
+            end
+        end
+        
+        if bnw_mode then
+            itemType, duration, finalTurn, data1, data2, data3, flag1, fromPlayer = g_Deal:GetNextItem();
+        else
+            itemType, duration, finalTurn, data1, data2, fromPlayer = g_Deal:GetNextItem();
+        end
+    until( itemType == nil )
+    end
+    if (iNumItemsFromUs == 1 and luxFromUs == 1)
+        return true;
+    end
+    if (iNumItemsFromUs == 1 and iNumItemsFromThem == 1 and goldFromUs == 1 and goldFromThem == 1)
+        return true;
+    end
+
+    return false;
+end
 ----------------------------------------------------------------
 ----------------------------------------------------------------
 function DisplayDeal()
