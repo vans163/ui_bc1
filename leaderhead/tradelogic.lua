@@ -1921,16 +1921,16 @@ function AIOfferingLux()
             iNumItemsFromThem = iNumItemsFromThem + 1;
         end
 	
-	       if( TradeableItems.TRADE_ITEM_GOLD == itemType || TradeableItems.TRADE_ITEM_GOLD_PER_TURN == itemType )
-            if (bFromUs ) then
+	if ( TradeableItems.TRADE_ITEM_GOLD == itemType or TradeableItems.TRADE_ITEM_GOLD_PER_TURN == itemType ) then
+            if (bFromUs) then
                 goldFromUs = 1;
             else
                 goldFromThem = 1;
             end
         end
 
-        if( TradeableItems.TRADE_ITEM_RESOURCES == itemType && iNumItemsFromUs == 1 ) then
-            if( bFromUs ) then
+        if (TradeableItems.TRADE_ITEM_RESOURCES == itemType) then
+            if (bFromUs) then
                 luxFromUs = 1;
             end
         end
@@ -1942,10 +1942,10 @@ function AIOfferingLux()
         end
     until( itemType == nil )
     end
-    if (iNumItemsFromUs == 1 and luxFromUs == 1)
+    if (iNumItemsFromUs == 1 and luxFromUs == 1) then
         return true;
     end
-    if (iNumItemsFromUs == 1 and iNumItemsFromThem == 1 and goldFromUs == 1 and goldFromThem == 1)
+    if (iNumItemsFromUs == 1 and iNumItemsFromThem == 1 and goldFromUs == 1 and goldFromThem == 1) then
         return true;
     end
 
