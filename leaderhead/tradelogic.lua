@@ -1903,6 +1903,7 @@ function AIOfferingLux()
     else
         itemType, duration, finalTurn, data1, data2, fromPlayer = g_Deal:GetNextItem();
     end
+
     local iNumItemsFromUs = 0;
     local iNumItemsFromThem = 0;
     local goldFromUs = 0;
@@ -1921,7 +1922,7 @@ function AIOfferingLux()
             iNumItemsFromThem = iNumItemsFromThem + 1;
         end
 	
-	if ( TradeableItems.TRADE_ITEM_GOLD == itemType or TradeableItems.TRADE_ITEM_GOLD_PER_TURN == itemType ) then
+	    if ( TradeableItems.TRADE_ITEM_GOLD == itemType or TradeableItems.TRADE_ITEM_GOLD_PER_TURN == itemType ) then
             if (bFromUs) then
                 goldFromUs = 1;
             else
@@ -1942,9 +1943,12 @@ function AIOfferingLux()
         end
     until( itemType == nil )
     end
+
+    --AI wants to buy our LUX, deny
     if (iNumItemsFromUs == 1 and luxFromUs == 1) then
         return true;
     end
+    --AI wants to continue a loan, deny
     if (iNumItemsFromUs == 1 and iNumItemsFromThem == 1 and goldFromUs == 1 and goldFromThem == 1) then
         return true;
     end
@@ -2329,6 +2333,7 @@ function PocketGoldHandler( isUs )
 		g_Deal:AddGoldTrade( g_iUs, iAmount );
 
 	else
+        iAmount = CalculateGoldToOffer(false);
 		iAmountAvailable = g_Deal:GetGoldAvailable(g_iThem, iItemToBeChanged);
 		if (iAmount > iAmountAvailable) then
 			iAmount = iAmountAvailable;
@@ -2411,29 +2416,66 @@ Controls.ThemGoldAmount:SetVoid1( 0 );
 
 
 
+function CalculateGoldToOffer( b_GPT)
+    local iGoldPerTurn = 2;
+    local iGold = 45;
 
+    if (g_Deal:GetNumItems() == 1) then
+        g_Deal:ResetIterator();
+        if bnw_mode then
+            itemType, duration, finalTurn, data1, data2, data3, flag1, fromPlayer = g_Deal:GetNextItem();
+        else
+            itemType, duration, finalTurn, data1, data2, fromPlayer = g_Deal:GetNextItem();
+        end
+
+        if (itemType ~= nil) then
+            if( fromPlayer == Game.GetActivePlayer() ) then
+                if ( TradeableItems.TRADE_ITEM_RESOURCES == itemType ) then
+                    local resourceID = data1
+                    local usage = Game.GetResourceUsageType( resourceID )
+                    if (usage == ResourceUsageTypes.RESOURCEUSAGE_LUXURY) then
+                        iGoldPerTurn = 7;
+                        iGold = 240;
+                    elseif (usage == ResourceUsageTypes.RESOURCEUSAGE_STRATEGIC) then
+                        iGoldPerTurn = 2;
+                        iGold = 45 * data2;
+                    end
+                end
+            end
+        end
+    end
+
+    local retv = 0;
+    if b_GPT then
+        retv = iGoldPerTurn;
+    else
+        retv = iGold;
+    end
+
+    return retv;
+end
 -----------------------------------------------------------------------------------------------------------------------
 -- Gold Per Turn Handlers
 -----------------------------------------------------------------------------------------------------------------------
 function PocketGoldPerTurnHandler( isUs )
 	--print("PocketGoldPerTurnHandler")
 
-	local iGoldPerTurn = 2;
+    local iGoldPerTurn = 2;
 
 	if( isUs == 1 ) then
-
 		if (iGoldPerTurn > g_pUs:CalculateGoldRate()) then
 			iGoldPerTurn = g_pUs:CalculateGoldRate();
 		end
-
 		g_Deal:AddGoldPerTurnTrade( g_iUs, iGoldPerTurn, g_iDealDuration );
+
 	else
+        iGoldPerTurn = CalculateGoldToOffer(true);
 
 		if (iGoldPerTurn > g_pThem:CalculateGoldRate()) then
 			iGoldPerTurn = g_pThem:CalculateGoldRate();
 		end
-
 		g_Deal:AddGoldPerTurnTrade( g_iThem, iGoldPerTurn, g_iDealDuration );
+
 	end
 	DisplayDeal();
 	DoUIDealChangedByHuman();

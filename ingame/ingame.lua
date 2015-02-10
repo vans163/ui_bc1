@@ -10,6 +10,9 @@
 include( "FLuaVector" );
 include( "InstanceManager" );
 include( "Bombardment");
+include( "EUI_utilities" )
+
+local EUI = EUI
 
 local g_InstanceManager = InstanceManager:new( "AlertMessageInstance", "AlertMessageLabel", Controls.AlertStack );
 local g_PopupIM = InstanceManager:new( "PopupText", "Anchor", Controls.PopupTextContainer );
@@ -918,7 +921,7 @@ function OnUpdateSelection( isSelected )
                 Events.GenericWorldAnchor( GenericWorldAnchorTypes.WORLD_ANCHOR_WORKER, false, v.plot:GetX(), v.plot:GetY(), v.buildType );
             end
         end
-    end 
+    end
     aWorkerSuggestHighlightPlots = nil;
         
     -- founders - clear old list first

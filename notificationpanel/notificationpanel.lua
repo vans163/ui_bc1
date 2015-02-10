@@ -1444,12 +1444,12 @@ local function UpdateCivListNow()
 			end
 
             -- Update Can Gift Unit. BNW only?
-            if bnw_mode and Players[g_activePlayerID]:HasPolicy(GameInfo.Policies.POLICY_ARSENAL_DEMOCRACY.ID) then
-                if minorPlayer:GetIncomingUnitCountdown(g_activePlayerID) >= 0 then
-                    instance.GiftUnit:SetHide( true )
-                else
-                    instance.GiftUnit:SetHide( false )
-                end
+            if Players[g_activePlayerID]:HasPolicy(GameInfo.Policies.POLICY_ARSENAL_DEMOCRACY.ID) 
+                and minorPlayer:GetIncomingUnitCountdown(g_activePlayerID) <= 0 
+                then
+                instance.GiftUnit:SetHide( false )
+            else
+                instance.GiftUnit:SetHide( true )
             end
 
 			-- Update Spies

@@ -175,7 +175,9 @@ local function ClearOverlays()
 		g_isCityLimits = false
 		Events.ClearHexHighlightStyle( "CityLimits" )
 		Events.ClearHexHighlightStyle( "OwnedFill" )
-		Events.ClearHexHighlightStyle( "OwnedOutline" )
+        Events.ClearHexHighlightStyle( "OwnedOutline" )
+        --Events.ClearHexHighlightStyle( "BadSettleFill" )
+		--Events.ClearHexHighlightStyle( "BadSettleOutline" )
 	end
 	if g_isCityYields then
 		g_isCityYields = false
@@ -736,8 +738,10 @@ local function UpdatePlotHelp( timeChange )
 		end
 
 		local selectedUnit = UI.GetHeadSelectedUnit()
+        
 		local isCombatUnitSelected
 		if selectedUnit then
+            local unitType = selectedUnit:GetUnitType()
 			isCombatUnitSelected = selectedUnit:IsCombatUnit()
 			if selectedUnit:CanFound( plot ) then
 				g_isCityLimits = true
@@ -754,10 +758,14 @@ local function UpdatePlotHelp( timeChange )
 					local ownerID = p:GetOwner()
 					if ownerID >= 0 and ownerID ~= activePlayerID or p:IsPlayerCityRadius( activePlayerID ) then
 --					if p:GetCityRadiusCount() > 0 then
-						Events.SerialEventHexHighlight( hex, true, nil, "OwnedFill" )
-						Events.SerialEventHexHighlight( hex, true, nil, "OwnedOutline" )
+					--	Events.SerialEventHexHighlight( hex, true, nil, "OwnedFill" )
+					--	Events.SerialEventHexHighlight( hex, true, nil, "OwnedOutline" )
 					end
 				end
+           -- elseif (unitType == GameInfo.Units.UNIT_SETTLER.ID) then
+           --     local hex = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
+            --    Events.SerialEventHexHighlight( hex, true, nil, "BadSettleFill" )
+            --    Events.SerialEventHexHighlight( hex, true, nil, "BadSettleOutline" )
 			end
 		end
 

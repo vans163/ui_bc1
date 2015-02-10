@@ -1073,6 +1073,35 @@ local function RefreshCityBannersNow()
 				cityBanner.CityBannerBGRightHL:SetColor( backgroundColor )
 				cityBanner.CityBannerBackgroundHL:SetColor( backgroundColor )
 
+                --Update empire span and mark bad tiles
+                local plot = city:Plot()
+                local cityWorkingRadius = 3
+                local hex = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
+                Events.SerialEventHexHighlight( hex, true, nil, "EmpireLimits" )
+
+                for i=1, EUI.CountHexPlots( cityWorkingRadius ) do
+                    local p = EUI.IndexPlot( plot, i )
+                    hex = ToHexFromGrid{ x=p:GetX(), y=p:GetY() }
+                    if (p:GetOwner() == Game.GetActivePlayer()) then
+                        if (p:IsImprovementPillaged()) then
+                            Events.SerialEventHexHighlight( hex, true, nil, "PillageFill" )
+                            Events.SerialEventHexHighlight( hex, true, nil, "PillageOutline" )
+                        end
+
+                        -- TODO: This currently reveals hidden resources, a bug in game-core
+                        if (p:GetNumResource() > 0) then
+                            --print(p:GetImprovementType())
+                            if (p:GetImprovementType() == -1) then
+                                --print("no improvement");
+
+                                Events.SerialEventHexHighlight( hex, true, nil, "PillageFill" )
+                                Events.SerialEventHexHighlight( hex, true, nil, "PillageOutline" )
+                            end
+                        end
+                    end
+                    Events.SerialEventHexHighlight( hex, true, nil, "EmpireLimits" )
+                end
+
 				-- Update Growth
 				local foodStored100 = city:GetFoodTimes100()
 				local foodThreshold100 = city:GrowthThreshold() * 100
@@ -1346,6 +1375,13 @@ local function RefreshCityBannersNow()
 			DestroyCityBanner( plotIndex, cityBanner )
 		end
 	end
+
+    --local normalView = not (civ5_mode and InStrategicView())
+        -- Highlight unsettlable tiles
+    --    if normalView then
+    --        Events.SerialEventHexHighlight( hexPos , true, nil, "CityLimits" )
+    --    end
+
 	-- Loop all dirty city banners
 	------------------------------
 	g_dirtyCityBanners = {}
@@ -1355,15 +1391,14 @@ local function RefreshCityBannersNow()
 		local city = plot and plot:GetPlotCity()
 		if city then
 
+            local normalView = not (civ5_mode and InStrategicView())
 			local cityOwnerID = city:GetOwner()
-
 			if city:GetTeam() == g_activeTeamID or g_activePlayer:IsObserver() then
 
 				if cityOwnerID == g_activePlayerID and not g_isMultiplayerEndTurnTimer then -- TODO check
 					Network.SendUpdateCityCitizens( city:GetID() ) --city:DoReallocateCitizens()
 				end
-
-				local normalView = not (civ5_mode and InStrategicView())
+				
 				-- Show plots that will be acquired by culture
 				local purchasablePlots = {city:GetBuyablePlotList()}
 				for i = 1, #purchasablePlots do
@@ -1372,7 +1407,6 @@ local function RefreshCityBannersNow()
 				end
 
 				-- Show city plots
-
 				for i = 0, city:GetNumCityPlots()-1 do
 					local plot = city:GetCityIndexPlot( i )
 					-- worked city plots
@@ -1382,25 +1416,27 @@ local function RefreshCityBannersNow()
 							Events.SerialEventHexHighlight( hexPos , true, nil, "WorkedFill" )
 							Events.SerialEventHexHighlight( hexPos , true, nil, "WorkedOutline" )
 						end
-						if normalView then
-							Events.SerialEventHexHighlight( hexPos , true, nil, "CityLimits" )
-						end
 					end
 				end
-				for plot in CityPlots( city ) do
+				--for plot in CityPlots( city ) do
 					-- city plots that are owned but not worked
-					if not city:IsWorkingPlot( plot ) then
-						local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
-						Events.SerialEventHexHighlight( hexPos , true, nil, "OwnedFill" )
-						Events.SerialEventHexHighlight( hexPos , true, nil, "OwnedOutline" )
-					end
-				end
+					--if not city:IsWorkingPlot( plot ) then
+					--	local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
+					--	Events.SerialEventHexHighlight( hexPos , true, nil, "OwnedFill" )
+					--	Events.SerialEventHexHighlight( hexPos , true, nil, "OwnedOutline" )
+					--end
+				--end
 			else
-				for plot in CityPlots( city ) do
-					local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
-					Events.SerialEventHexHighlight( hexPos , true, nil, "OwnedFill" )
-					Events.SerialEventHexHighlight( hexPos , true, nil, "OwnedOutline" )
-				end
+                local plot = city:Plot()
+                local cityWorkingRadius = 3
+                local hex = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
+                Events.SerialEventHexHighlight( hex, true, nil, "CityLimits" )
+
+                for i=1, EUI.CountHexPlots( cityWorkingRadius ) do
+                    local p = EUI.IndexPlot( plot, i )
+                    hex = ToHexFromGrid{ x=p:GetX(), y=p:GetY() }
+                    Events.SerialEventHexHighlight( hex , true, nil, "CityLimits" )
+                end
 			end
 			Events.RequestYieldDisplay( YieldDisplayTypes.CITY_OWNED, city:GetX(), city:GetY() )
 		end

@@ -31,6 +31,9 @@
 	<style name="OwnedFill" type="FilledHex" width ="1" color="255,140,0,64" />
 	<style name="OwnedOutline" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="255,140,0,200" />
 
+    <style name="PillageFill" type="FilledHex" width ="1" color="255,25,25,150" />
+    <style name="PillageOutline" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="255,0,0,200" />
+
 	<style name="BuyFill" type="FilledHex" width ="1" color="255,215,0,50" />
 	<style name="BuyOutline" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="255,215,0,192" />
 
@@ -40,6 +43,7 @@
 	<style name="EnemyFill" type="FilledHex" width ="1" color="255,0,0,64" />
 	<style name="EnemyOutline" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="255,0,0,200" />
 
-	<style name="CityLimits" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="0,0,0,164" />
+    <style name="CityLimits" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="0,0,0,164" />
+	<style name="EmpireLimits" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="0,0,0,164" />
 
 </Highlights>
