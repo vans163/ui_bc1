@@ -2415,7 +2415,7 @@ Controls.ThemGoldAmount:SetVoid1( 0 );
 
 
 
-
+--TODO: Fix this to include different speed settings
 function CalculateGoldToOffer( b_GPT)
     local iGoldPerTurn = 2;
     local iGold = 45;

@@ -1088,12 +1088,15 @@ local function RefreshCityBannersNow()
                             Events.SerialEventHexHighlight( hex, true, nil, "PillageOutline" )
                         end
 
-                        -- TODO: This currently reveals hidden resources, a bug in game-core
-                        if (p:GetNumResource() > 0) then
-                            --print(p:GetImprovementType())
-                            if (p:GetImprovementType() == -1) then
-                                --print("no improvement");
+                        if (p:GetNumResource() > 0) and (p:GetImprovementType() == -1) then
+                            local a_player = Players[Game.GetActivePlayer()]
+                            local pTeam = Teams[a_player:GetTeam()];
 
+                            local curResource = GameInfo.Resources[p:GetResourceType()];
+                            local prereq = GameInfo.Technologies[curResource.TechReveal];
+
+
+                            if (pTeam:GetTeamTechs():HasTech(GameInfoTypes[curResource.TechReveal])) then
                                 Events.SerialEventHexHighlight( hex, true, nil, "PillageFill" )
                                 Events.SerialEventHexHighlight( hex, true, nil, "PillageOutline" )
                             end
@@ -1375,12 +1378,6 @@ local function RefreshCityBannersNow()
 			DestroyCityBanner( plotIndex, cityBanner )
 		end
 	end
-
-    --local normalView = not (civ5_mode and InStrategicView())
-        -- Highlight unsettlable tiles
-    --    if normalView then
-    --        Events.SerialEventHexHighlight( hexPos , true, nil, "CityLimits" )
-    --    end
 
 	-- Loop all dirty city banners
 	------------------------------
