@@ -168,6 +168,10 @@ g_defaultWorkRate = g_defaultWorkRate or 100
 -- Utilities
 -------------------------------
 local function ClearOverlays()
+    local bShift = UIManager:GetShift();
+    if bShift then
+        return;
+    end
 	for i = 1, #g_unitMouseOvers do
 		Game.MouseoverUnit( g_unitMouseOvers:remove(), false )
 	end
@@ -176,8 +180,6 @@ local function ClearOverlays()
 		Events.ClearHexHighlightStyle( "CityLimits" )
 		Events.ClearHexHighlightStyle( "OwnedFill" )
         Events.ClearHexHighlightStyle( "OwnedOutline" )
-        --Events.ClearHexHighlightStyle( "BadSettleFill" )
-		--Events.ClearHexHighlightStyle( "BadSettleOutline" )
 	end
 	if g_isCityYields then
 		g_isCityYields = false

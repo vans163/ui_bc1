@@ -1341,7 +1341,7 @@ local function UpdateWorkingHexesNow()
 				local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
 				local worldPos = HexToWorld( hexPos )
 				local iconID, tipKey
-				if city:IsWorkingPlot( plot ) then
+				if city:IsWorkingPlot( plot ) and plot ~= city:Plot() then
 
 					-- The city itself
 					if cityPlotIndex == 0 then

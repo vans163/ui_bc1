@@ -113,6 +113,35 @@ end
 
 ----------------------------------------------------------
 ----------------------------------------------------------
+function ReDrawPlots( city )
+    Events.ClearHexHighlightStyle( "WorkedFill" )
+    Events.ClearHexHighlightStyle( "WorkedOutline" )
+
+    for cityPlotIndex = 0, city:GetNumCityPlots() - 1 do
+        local plot = city:GetCityIndexPlot( cityPlotIndex )
+        if plot then
+            local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
+            if city:IsWorkingPlot( plot ) and plot ~= city:Plot() then
+                print("citizenfill");
+                Events.SerialEventHexHighlight( hexPos , true, nil, "WorkedFill" )
+                Events.SerialEventHexHighlight( hexPos , true, nil, "WorkedOutline" )
+            end
+        end
+    end
+end
+
+function ClickRSelect(wParam, lParam)
+    lastCitySelected = nil;
+    Events.ClearHexHighlightStyle( "Culture" )
+    Events.ClearHexHighlightStyle( "WorkedFill" )
+    Events.ClearHexHighlightStyle( "WorkedOutline" )
+    Events.ClearHexHighlightStyle( "CitySelectedFill" )
+    Events.ClearHexHighlightStyle( "CitySelectedOutline" )
+    Events.ClearHexHighlightStyle( "OwnedFill" )
+    Events.ClearHexHighlightStyle( "OwnedOutline" )
+    return true;
+end
+
 function ClickSelect( wParam, lParam )
 
     -- Give the strategic view a chance to process the click first
@@ -126,18 +155,44 @@ function ClickSelect( wParam, lParam )
         local bShift = UIManager:GetShift();
         local bAlt = UIManager:GetAlt();
         local bCtrl = UIManager:GetControl();
-        UI.LocationSelect(plot, bCtrl, bAlt, bShift);
+        if not bShift then
+            --lastCitySelected = nil;
+            UI.LocationSelect(plot, bCtrl, bAlt, bShift);
+        else
+            local cityOnPlot = plot:GetPlotCity();
+            local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
+
+            if cityOnPlot then
+                lastCitySelected = cityOnPlot;
+                Events.SerialEventHexHighlight( hexPos , true, nil, "CitySelectedFill" )
+                Events.SerialEventHexHighlight( hexPos , true, nil, "CitySelectedOutline" )
+            elseif lastCitySelected then
+                Network.SendDoTask( lastCitySelected:GetID(), TaskTypes.TASK_CHANGE_WORKING_PLOT, lastCitySelected:GetCityPlotIndex(plot), -1, false )
+                local workingCity = plot:GetWorkingCity();
+                if workingCity and workingCity:IsWorkingPlot( plot ) then
+                    if workingCity == lastCitySelected then
+                        Events.SerialEventHexHighlight( hexPos , false, nil, "WorkedFill" )
+                        Events.SerialEventHexHighlight( hexPos , false, nil, "WorkedOutline" )
+                    end
+                elseif workingCity == lastCitySelected then
+                    print("fillingHex");
+                    --ReDrawPlots(lastCitySelected);
+                    Events.SerialEventHexHighlight( hexPos , true, nil, "WorkedFill" )
+                    Events.SerialEventHexHighlight( hexPos , true, nil, "WorkedOutline" )
+                end
+            end
+        end
     end
     return true;
 end
 InterfaceModeMessageHandler[InterfaceModeTypes.INTERFACEMODE_SELECTION][MouseEvents.LButtonUp] = ClickSelect;
+InterfaceModeMessageHandler[InterfaceModeTypes.INTERFACEMODE_SELECTION][MouseEvents.RButtonUp] = ClickRSelect;
 if (UI.IsTouchScreenEnabled()) then
     InterfaceModeMessageHandler[InterfaceModeTypes.INTERFACEMODE_SELECTION][MouseEvents.PointerUp] = ClickSelect;
 end
 
-
-
 function EjectHandler( wParam, lParam )
+
     local plot = Map.GetPlot( UI.GetMouseOverHex() );
     local plotX = plot:GetX();
     local plotY = plot:GetY();

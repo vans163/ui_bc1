@@ -558,6 +558,10 @@ end
 -- Clear Hex Highlighting
 -------------------------------------------------
 local function ClearHexHighlights()
+    local bShift = UIManager:GetShift();
+    if bShift then
+        return;
+    end
 	Events.ClearHexHighlightStyle( "Culture" )
 	Events.ClearHexHighlightStyle( "WorkedFill" )
 	Events.ClearHexHighlightStyle( "WorkedOutline" )
@@ -1407,12 +1411,18 @@ local function RefreshCityBannersNow()
 				for i = 0, city:GetNumCityPlots()-1 do
 					local plot = city:GetCityIndexPlot( i )
 					-- worked city plots
-					if plot then
-						local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
+					if plot and plot ~= city:Plot() then
+                        local workingCity = plot:GetWorkingCity();
 						if city:IsWorkingPlot( plot ) then
+                            local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
 							Events.SerialEventHexHighlight( hexPos , true, nil, "WorkedFill" )
 							Events.SerialEventHexHighlight( hexPos , true, nil, "WorkedOutline" )
 						end
+                        if workingCity ~= nil and workingCity ~= city and workingCity:IsWorkingPlot(plot) then
+                            local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
+                            Events.SerialEventHexHighlight( hexPos , true, nil, "OwnedFill" )
+                            Events.SerialEventHexHighlight( hexPos , true, nil, "OwnedOutline" )
+                        end
 					end
 				end
 				--for plot in CityPlots( city ) do

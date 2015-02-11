@@ -91,6 +91,7 @@ local DefaultMessageHandler = {};
 
 DefaultMessageHandler[KeyEvents.KeyDown] =
 function( wParam, lParam )
+
 	if ( wParam == Keys.VK_LEFT ) then
 		Events.SerialEventCameraStopMovingRight();
 		Events.SerialEventCameraStartMovingLeft();
@@ -134,6 +135,8 @@ function( wParam, lParam )
 	elseif ( wParam == Keys.VK_DOWN ) then
 		Events.SerialEventCameraStopMovingBack();
 		return true;
+    elseif ( wParam == Keys.VK_SHIFT) then
+        return true;
 	end
 	return false;
 end
@@ -141,6 +144,7 @@ end
 
 -- Emergency key up handler
 function KeyUpHandler( wParam )
+
 	if ( wParam == Keys.VK_LEFT ) then
 		Events.SerialEventCameraStopMovingLeft();
 	elseif ( wParam == Keys.VK_RIGHT ) then

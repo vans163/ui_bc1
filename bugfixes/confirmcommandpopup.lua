@@ -1,4 +1,3 @@
-
 -- CONFIRM COMMAND POPUP
 -- This popup occurs when an action needs confirmation.
 PopupLayouts[ButtonPopupTypes.BUTTONPOPUP_CONFIRMCOMMAND] = function(popupInfo)

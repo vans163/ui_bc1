@@ -31,6 +31,9 @@
 	<style name="OwnedFill" type="FilledHex" width ="1" color="255,140,0,64" />
 	<style name="OwnedOutline" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="255,140,0,200" />
 
+    <style name="CitySelectedFill" type="FilledHex" width ="1" color="255,140,0,64" />
+    <style name="CitySelectedOutline" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="255,140,0,200" />
+
     <style name="PillageFill" type="FilledHex" width ="1" color="255,25,25,64" />
     <style name="PillageOutline" type="SplineBorder" width ="7" texture="hex_contour1.dds" color="255,0,0,200" />
 
