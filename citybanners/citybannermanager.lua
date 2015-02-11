@@ -902,6 +902,21 @@ function OnLandsknechtPurchaseClick( plotIndex )
     end
 end
 
+local function ClickPopulationBox( plotIndex )
+    local plot = Map.GetPlotByIndex( plotIndex )
+    local city = plot and plot:GetPlotCity()
+    if city then
+        local cityOwnerID = city:GetOwner()
+        local cityOwner = Players[ cityOwnerID ]
+
+        -- Active player city
+        if cityOwnerID == g_activePlayerID then
+            Network.SendSetCityAvoidGrowth( city:GetID(), not city:IsForcedAvoidGrowth() )
+            Network.SendUpdateCityCitizens( city:GetID() )
+        end
+    end
+end
+
 -------------------------------------------------
 -- Update banners to reflect latest city info
 -------------------------------------------------
@@ -953,7 +968,7 @@ local function RefreshCityBannersNow()
 						cityBanner = {}
 						ContextPtr:BuildInstanceForControl( "TeamCityBanner", cityBanner, Controls.CityBanners )
 						cityBanner.PopulationBox:RegisterCallback( Mouse.eMouseEnter, OnMouseEnter )
-						cityBanner.PopulationBox:RegisterCallback( Mouse.eLClick, OnBannerClick )
+						cityBanner.PopulationBox:RegisterCallback( Mouse.eLClick, ClickPopulationBox )
 						cityBanner.CityBannerProductionButton:RegisterCallback( Mouse.eMouseEnter, OnMouseEnter )
 						cityBanner.CityBannerProductionButton:RegisterCallback( Mouse.eLClick, OnBannerClick )
 						cityBanner.CityBannerProductionButton:RegisterCallback( Mouse.eRClick, OnProdRClick )

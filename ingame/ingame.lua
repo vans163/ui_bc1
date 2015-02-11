@@ -130,7 +130,17 @@ function ReDrawPlots( city )
     end
 end
 
-function ClickRSelect(wParam, lParam)
+function KeyUpMouseHandlr(wParam, lParam)
+
+    if ( wParam == Keys.VK_SHIFT) then
+        ClickRSelect();
+        return true;
+    end
+    return false;
+end
+Events.KeyUpEvent.Add(KeyUpMouseHandlr);
+
+function ClickRSelect()
     lastCitySelected = nil;
     Events.ClearHexHighlightStyle( "Culture" )
     Events.ClearHexHighlightStyle( "WorkedFill" )
@@ -163,9 +173,16 @@ function ClickSelect( wParam, lParam )
             local hexPos = ToHexFromGrid{ x=plot:GetX(), y=plot:GetY() }
 
             if cityOnPlot then
-                lastCitySelected = cityOnPlot;
-                Events.SerialEventHexHighlight( hexPos , true, nil, "CitySelectedFill" )
-                Events.SerialEventHexHighlight( hexPos , true, nil, "CitySelectedOutline" )
+                if lastCitySelected == nil then
+                    lastCitySelected = cityOnPlot;
+                    Events.SerialEventHexHighlight( hexPos , true, nil, "CitySelectedFill" )
+                    Events.SerialEventHexHighlight( hexPos , true, nil, "CitySelectedOutline" )
+                else
+                    lastCitySelected = nil;
+                    Events.SerialEventHexHighlight( hexPos , false, nil, "CitySelectedFill" )
+                    Events.SerialEventHexHighlight( hexPos , false, nil, "CitySelectedOutline" )
+                end
+
             elseif lastCitySelected then
                 Network.SendDoTask( lastCitySelected:GetID(), TaskTypes.TASK_CHANGE_WORKING_PLOT, lastCitySelected:GetCityPlotIndex(plot), -1, false )
                 local workingCity = plot:GetWorkingCity();
@@ -186,7 +203,6 @@ function ClickSelect( wParam, lParam )
     return true;
 end
 InterfaceModeMessageHandler[InterfaceModeTypes.INTERFACEMODE_SELECTION][MouseEvents.LButtonUp] = ClickSelect;
-InterfaceModeMessageHandler[InterfaceModeTypes.INTERFACEMODE_SELECTION][MouseEvents.RButtonUp] = ClickRSelect;
 if (UI.IsTouchScreenEnabled()) then
     InterfaceModeMessageHandler[InterfaceModeTypes.INTERFACEMODE_SELECTION][MouseEvents.PointerUp] = ClickSelect;
 end
