@@ -1372,8 +1372,10 @@ local function UpdateCivListNow()
                         local resourceID = resource.ID;
                         local usage = Game.GetResourceUsageType( resourceID )
 
-                        if player:GetNumResourceAvailable( resourceID, true ) > 1 then
-                            if usage == ResourceUsageTypes.RESOURCEUSAGE_LUXURY then
+                        if player:GetNumResourceAvailable( resourceID, false ) > 0 and player:GetNumResourceAvailable( resourceID, true ) > 1 then
+                            if usage == ResourceUsageTypes.RESOURCEUSAGE_LUXURY 
+                            and player:GetNumResourceAvailable( resourceID, false ) > 0
+                            then
                                 if (not bnw_mode or player:GetHappinessFromLuxury( resourceID ) > 0) then
                                     if g_deal:IsPossibleToTradeItem(playerID, g_activePlayerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1) then
                                         table.insert( theirTradeItems, resource.IconString )
