@@ -89,6 +89,7 @@ local Map = Map
 --local MouseOverStrategicViewResource = MouseOverStrategicViewResource
 local Locale = Locale
 local L = Locale.ConvertTextKey
+local table_insert = table.insert
 --getmetatable("").__index.L = L
 
 if Game and PreGame then
@@ -102,11 +103,11 @@ if Game and PreGame then
 		-- save curent deal
 		local item = {}
 		local deal = {}
+        item.SetFromPlayer = g_deal:GetFromPlayer()
+        item.SetToPlayer = g_deal:GetToPlayer()
+        item.SetSurrenderingPlayer = g_deal:GetSurrenderingPlayer()
 		item.SetDemandingPlayer = g_deal:GetDemandingPlayer()
-		item.SetFromPlayer = g_deal:GetFromPlayer()
 		item.SetRequestingPlayer = g_deal:GetRequestingPlayer()
-		item.SetSurrenderingPlayer = g_deal:GetSurrenderingPlayer()
-		item.SetToPlayer = g_deal:GetToPlayer()
 
 		g_deal:ResetIterator()
 		repeat
@@ -114,11 +115,13 @@ if Game and PreGame then
 			table.insert( deal, item )
 			item = { g_deal:GetNextItem() }
 		until #item < 1
-		table.insert( g_savedDealStack, deal )
+
+        table_insert( g_savedDealStack, deal )
+        g_deal:ClearItems()
 	end
 
 	function EUI.PopScratchDeal()
-		-- restore curent deal
+		-- restore saved deal
 		g_deal:ClearItems()
 		local deal = table.remove( g_savedDealStack )
 		for k,v in pairs( deal[1] or {} ) do
@@ -165,19 +168,19 @@ if Game and PreGame then
 			elseif id == TradeableItems.TRADE_ITEM_THIRD_PARTY_EMBARGO then
 				g_deal:AddThirdPartyEmbargo( fromPlayerID, item[4], item[2] )
 			elseif civ5_mode then
-				if id == TradeableItems.TRADE_ITEM_GOLD then -- BE: TRADE_ITEM_ENERGY
+				if id == TradeableItems.TRADE_ITEM_GOLD then
 					g_deal:AddGoldTrade( fromPlayerID, item[4] )
-				elseif id == TradeableItems.TRADE_ITEM_GOLD_PER_TURN then -- BE: TRADE_ITEM_ENERGY_PER_TURN
+				elseif id == TradeableItems.TRADE_ITEM_GOLD_PER_TURN then
 					g_deal:AddGoldPerTurnTrade( fromPlayerID, item[4], item[2] )
-				elseif id == TradeableItems.TRADE_ITEM_DEFENSIVE_PACT then -- not in BE
+				elseif id == TradeableItems.TRADE_ITEM_DEFENSIVE_PACT then
 					g_deal:AddDefensivePact( fromPlayerID, item[2] )
-				elseif id == TradeableItems.TRADE_ITEM_RESEARCH_AGREEMENT then -- not in BE
+				elseif id == TradeableItems.TRADE_ITEM_RESEARCH_AGREEMENT then
 					g_deal:AddResearchAgreement( fromPlayerID, item[2] )
-				elseif gk_mode and id == TradeableItems.TRADE_ITEM_ALLOW_EMBASSY then -- not in BE
+				elseif gk_mode and id == TradeableItems.TRADE_ITEM_ALLOW_EMBASSY then
 					g_deal:AddAllowEmbassy( fromPlayerID )
-				elseif gk_mode and id == TradeableItems.TRADE_ITEM_DECLARATION_OF_FRIENDSHIP then -- not in BE
+				elseif gk_mode and id == TradeableItems.TRADE_ITEM_DECLARATION_OF_FRIENDSHIP then
 					g_deal:AddDeclarationOfFriendship( fromPlayerID )
-				elseif bnw_mode and id == TradeableItems.TRADE_ITEM_VOTE_COMMITMENT then -- not in BE
+				elseif bnw_mode and id == TradeableItems.TRADE_ITEM_VOTE_COMMITMENT then
 					g_deal:AddVoteCommitment( fromPlayerID, item[4], item[5], item[6], item[7] )
 				end
 			else -- civ be
@@ -262,30 +265,30 @@ function table:append( text )
 	self[#self] = self[#self] .. text
 end
 function table:insertLocalized( ... )
-	return self:insert( L( ... ) )
+	return table_insert( self, L( ... ) )
 end
 function table:insertIf( s )
 	if s then
-		return self:insert( s )
+		return table_insert( self, s )
 	end
 end
 function table:insertLocalizedIf( ... )
 	if ... then
-		return self:insert( L( ... ) )
+		return table_insert( self, L( ... ) )
 	end
 end
 function table:insertLocalizedIfNonZero( textKey, ... )
 	if ... ~= 0 then
-		return self:insert( L( textKey, ... ) )
+		return table_insert( self, L( textKey, ... ) )
 	end
 end
 function table:insertLocalizedBulletIfNonZero( a, b, ... )
 	if tonumber( b ) then
 		if b ~= 0 then
-			return self:insert( "[ICON_BULLET]" .. L( a, b, ... ) )
+			return table_insert( self, "[ICON_BULLET]" .. L( a, b, ... ) )
 		end
 	elseif ... ~= 0 then
-		return self:insert( a .. L( b, ... ) )
+		return table_insert( self, a .. L( b, ... ) )
 	end
 end
 

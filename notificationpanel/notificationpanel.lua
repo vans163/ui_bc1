@@ -794,10 +794,8 @@ local function SortMajorStack( instance1, instance2 )
 	local player1 = Players[ instance1:GetVoid1() ]
 	local player2 = Players[ instance2:GetVoid1() ]
 	if player1 and player2 then
-		local team1 = Teams[ player1:GetTeam() ]
-		local team2 = Teams[ player2:GetTeam() ]
-		local score1 = team1:GetScore()
-		local score2 = team2:GetScore()
+        local score1 = Teams[ player1:GetTeam() ]:GetScore()
+        local score2 = Teams[ player2:GetTeam() ]:GetScore()
 		if score1 == score2 then
 			return player1:GetScore() > player2:GetScore()
 		else
@@ -1038,10 +1036,11 @@ local g_civListInstanceToolTips = { -- the tooltip function names need to match 
 			tips:insert( L("TXT_KEY_DIPLO_MY_SCORE_TECH", player:GetScoreFromTechs() ) )
 			tips:insert( L("TXT_KEY_DIPLO_MY_SCORE_FUTURE_TECH", player:GetScoreFromFutureTech() ) )
 		end
-		if gk_mode and not Game.IsOption(GameOptionTypes.GAMEOPTION_NO_RELIGION) then
-			tips:insert( L("TXT_KEY_DIPLO_MY_SCORE_RELIGION", player:GetScoreFromReligion() ) )
-		end
-		if bnw_mode then
+        if bnw_mode then
+		    if not Game.IsOption(GameOptionTypes.GAMEOPTION_NO_RELIGION) then
+			    tips:insert( L("TXT_KEY_DIPLO_MY_SCORE_RELIGION", player:GetScoreFromReligion() ) )
+		    end
+		
 			if not Game.IsOption(GameOptionTypes.GAMEOPTION_NO_POLICIES) then
 				tips:insert( L("TXT_KEY_DIPLO_MY_SCORE_POLICIES", player:GetScoreFromPolicies() ) )
 			end
@@ -1112,7 +1111,7 @@ local g_civListInstanceToolTips = { -- the tooltip function names need to match 
 			elseif ping < 1000 then
 				ping = ping .. L"TXT_KEY_STAGING_ROOM_TIME_MS"
 			else
-				ping = string.format("%.2f" , ping / 1000) .. L"TXT_KEY_STAGING_ROOM_TIME_S"
+				ping = ("%.2f"):format( ping / 1000) .. L"TXT_KEY_STAGING_ROOM_TIME_S"
 			end
 			if ping>"" then
 				ping = L"TXT_KEY_ACTION_PING".." "..ping.." "
@@ -1367,7 +1366,7 @@ local function UpdateCivListNow()
 				end
 
 				--Is reasonable trade possible ?
-				--if player:GetMajorCivApproach( g_activePlayerID ) >= MajorCivApproachTypes.MAJOR_CIV_APPROACH_GUARDED then
+				if player:GetMajorCivApproach( g_activePlayerID ) > MajorCivApproachTypes.MAJOR_CIV_APPROACH_WAR then
 					for resource in GameInfo.Resources() do
                         local resourceID = resource.ID;
                         local usage = Game.GetResourceUsageType( resourceID )
@@ -1377,31 +1376,32 @@ local function UpdateCivListNow()
                             and player:GetNumResourceAvailable( resourceID, false ) > 0
                             then
                                 if (not bnw_mode or player:GetHappinessFromLuxury( resourceID ) > 0) then
-                                    if g_deal:IsPossibleToTradeItem(playerID, g_activePlayerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1) then
+                                    --if g_deal:IsPossibleToTradeItem(playerID, g_activePlayerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
+                                    --then
                                         table.insert( theirTradeItems, resource.IconString )
-                                    end
+                                    --end
                                 end
                             end
                         end
-                        if g_activePlayer:GetNumResourceAvailable( resourceID, true ) > 0 then
+                        if g_activePlayer:GetNumResourceAvailable( resourceID, false ) > 0 then
                             if usage == ResourceUsageTypes.RESOURCEUSAGE_LUXURY
                             and player:GetNumResourceAvailable( resourceID, true ) <= 0
                             and (not bnw_mode or g_activePlayer:GetHappinessFromLuxury( resourceID ) > 0)
-                            and g_deal:IsPossibleToTradeItem(g_activePlayerID, playerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
+                            --and g_deal:IsPossibleToTradeItem(g_activePlayerID, playerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
                             then
                                 table.insert( ourTradeItems, resource.IconString )
                             end
                             if usage == ResourceUsageTypes.RESOURCEUSAGE_STRATEGIC
                             and g_activePlayer:GetNumResourceAvailable( resourceID, false ) > 0
                             and player:GetCurrentEra() < (GameInfoTypes[resource.AIStopTradingEra] or math.huge)
-                            and g_deal:IsPossibleToTradeItem(g_activePlayerID, playerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
+                            --and g_deal:IsPossibleToTradeItem(g_activePlayerID, playerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
                             and player:GetNumResourceAvailable(resourceID, true) <= player:GetNumCities()
                             then
                                 table.insert( ourTradeItems, resource.IconString )
                             end
                         end
                     end
-				--end
+				end
 			end
 			instance.TheirTradeItems:SetText( table.concat( theirTradeItems ) )
 			instance.OurTradeItems:SetText( table.concat( ourTradeItems ) )
@@ -1443,9 +1443,8 @@ local function UpdateCivListNow()
 			end
 
             -- Update Can Gift Unit. BNW only?
-            if Players[g_activePlayerID]:HasPolicy(GameInfo.Policies.POLICY_ARSENAL_DEMOCRACY.ID) 
-                and minorPlayer:GetIncomingUnitCountdown(g_activePlayerID) <= 0 
-                then
+            --if Players[g_activePlayerID]:HasPolicy(GameInfo.Policies.POLICY_ARSENAL_DEMOCRACY.ID) 
+            if minorPlayer:GetIncomingUnitCountdown(g_activePlayerID) <= 0 then
                 instance.GiftUnit:SetHide( false )
             else
                 instance.GiftUnit:SetHide( true )

@@ -655,40 +655,18 @@ function DoUpdateButtons()
 				local iNumItemsFromUs = 0;
 				local iNumItemsFromThem = 0;
 
-				local itemType;
-				local duration;
-				local finalTurn;
-				local data1;
-				local data2;
-				local data3;
-				local flag1;
-				local fromPlayer;
-
 				g_Deal:ResetIterator();
-				if bnw_mode then
-					itemType, duration, finalTurn, data1, data2, data3, flag1, fromPlayer = g_Deal:GetNextItem();
-				else
-					itemType, duration, finalTurn, data1, data2, fromPlayer = g_Deal:GetNextItem();
-				end
-				if( itemType ~= nil ) then
-				repeat
-					local bFromUs = false;
-
-					if( fromPlayer == Game.GetActivePlayer() ) then
-						bFromUs = true;
-						iNumItemsFromUs = iNumItemsFromUs + 1;
-					else
-						iNumItemsFromThem = iNumItemsFromThem + 1;
-					end
-
-					if bnw_mode then
-						itemType, duration, finalTurn, data1, data2, data3, flag1, fromPlayer = g_Deal:GetNextItem();
-					else
-						itemType, duration, finalTurn, data1, data2, fromPlayer = g_Deal:GetNextItem();
-					end
-
-				until( itemType == nil )
-				end
+                repeat
+                    local deal = { g_Deal:GetNextItem() }
+                    local n = #deal
+                    if n < 1 then
+                        break
+                    elseif deal[n] == g_iUs then
+                        iNumItemsFromUs = iNumItemsFromUs + 1;
+                    else
+                        iNumItemsFromThem = iNumItemsFromThem + 1;
+                    end
+                until false
 
 				-- Depending on what's on the table we can ask the other player about what they think of the deal
 				if (iNumItemsFromUs > 0 and iNumItemsFromThem == 0) then
