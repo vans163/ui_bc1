@@ -217,10 +217,12 @@ local iPlayerID = Game.GetActivePlayer();
 local pPlayer = Players[iPlayerID];
 if (pPlayer ~= nil) then
     if (pPlayer:IsAlive()) then
-
         for iPlotLoop = 0, Map.GetNumPlots()-1, 1 do
             pPlot = Map.GetPlotByIndex(iPlotLoop);
             hex = ToHexFromGrid{ x=pPlot:GetX(), y=pPlot:GetY() }
+            --int   HasBarbarianCamp()
+            --Plot:IsBarbarian()
+            --Plot:IsGoody()
             OnResourceAdded( hex.x, hex.y, pPlot:GetImprovementType(), pPlot:GetResourceType() )
         end 
     end

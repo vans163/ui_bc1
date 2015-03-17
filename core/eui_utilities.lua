@@ -112,7 +112,7 @@ if Game and PreGame then
 		g_deal:ResetIterator()
 		repeat
 --print( unpack(item) )
-			table.insert( deal, item )
+			table_insert( deal, item )
 			item = { g_deal:GetNextItem() }
 		until #item < 1
 
@@ -252,7 +252,7 @@ if Game and PreGame then
 end
 
 local table = {
-	insert = table.insert,
+	insert = table_insert,
 	concat = table.concat,
 	remove = table.remove,
 	sort = table.sort,
@@ -425,6 +425,10 @@ function EUI.CountHexPlots( r )
 	return (r+1) * r * 3
 end
 
+function EUI.RadiusHexArea( a )
+    return ( math.sqrt( 1 + 4*a/3 ) - 1 ) / 2
+end
+
 local nilFunction = function() end
 
 local GameInfoIndex = function( t, tableName )
@@ -451,7 +455,7 @@ local GameInfoIndex = function( t, tableName )
 							subset = setmetatable( {}, setMT )
 							index[ v ] = subset
 						end
-						table.insert( subset, row )
+						table_insert( subset, row )
 					end
 				end
 				return index
@@ -499,7 +503,7 @@ local GameInfoIndex = function( t, tableName )
 --print("calling", tableName, t, condition )
 				if keys.ID then
 					for row in thisGameInfoTable() do
-						table.insert( set, t[row.ID] )
+						table_insert( set, t[row.ID] )
 					end
 				else
 					for row in thisGameInfoTable() do
@@ -507,7 +511,7 @@ local GameInfoIndex = function( t, tableName )
 						for k, v in pairs( row ) do
 							cache[ k ] = v
 						end
-						table.insert( set, cache )
+						table_insert( set, cache )
 					end
 				end
 				cacheMT.__call = iterator

@@ -177,6 +177,7 @@ function LeaderMessageHandler( iPlayer, iDiploUIState, szLeaderMessage, iAnimati
 			bClearTableAndDisplayDeal = true;
 			g_bAIMakingOffer = true;
 
+
             if AIOfferingLux() then
                 -- ignore lux/strategic trade requests
                 print("ai offered to trade");
@@ -655,7 +656,7 @@ function DoUpdateButtons()
 				local iNumItemsFromUs = 0;
 				local iNumItemsFromThem = 0;
 
-				g_Deal:ResetIterator();
+                g_Deal:ResetIterator();
                 repeat
                     local deal = { g_Deal:GetNextItem() }
                     local n = #deal
