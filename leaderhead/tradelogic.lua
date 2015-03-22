@@ -182,6 +182,11 @@ function LeaderMessageHandler( iPlayer, iDiploUIState, szLeaderMessage, iAnimati
                 -- ignore lux/strategic trade requests
                 print("ai offered to trade");
                 bMyMode = false;
+                
+                g_Deal:DoClearDeal();
+                UI.DoFinalizePlayerDeal( g_iThem, g_iUs, false );
+                UI.DoFinalizePlayerDeal( g_iUs, g_iThem, false );
+
                 UIManager:DequeuePopup( ContextPtr );
                 UI.SetLeaderHeadRootUp( false );
                 UI.RequestLeaveLeader();

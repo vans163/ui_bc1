@@ -1371,33 +1371,33 @@ local function UpdateCivListNow()
                         local resourceID = resource.ID;
                         local usage = Game.GetResourceUsageType( resourceID )
 
-                        if player:GetNumResourceAvailable( resourceID, false ) > 0 and player:GetNumResourceAvailable( resourceID, true ) > 1 then
-                            if usage == ResourceUsageTypes.RESOURCEUSAGE_LUXURY 
-                            and player:GetNumResourceAvailable( resourceID, false ) > 0
+                        if player == g_activePlayer then
+                        else
+                            if player:GetNumResourceAvailable( resourceID, false ) >= 1
+                            and player:GetNumResourceAvailable( resourceID, true ) >= 2 
                             then
-                                if (not bnw_mode or player:GetHappinessFromLuxury( resourceID ) > 0) then
-                                    --if g_deal:IsPossibleToTradeItem(playerID, g_activePlayerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
-                                    --then
-                                        table.insert( theirTradeItems, resource.IconString )
-                                    --end
+                                if usage == ResourceUsageTypes.RESOURCEUSAGE_LUXURY 
+                                and (not bnw_mode or player:GetHappinessFromLuxury( resourceID ) > 0)
+                                and g_activePlayer:GetNumResourceAvailable( resourceID, true ) <= 0
+                                then
+                                    table.insert( theirTradeItems, resource.IconString )
                                 end
                             end
-                        end
-                        if g_activePlayer:GetNumResourceAvailable( resourceID, false ) > 0 then
-                            if usage == ResourceUsageTypes.RESOURCEUSAGE_LUXURY
-                            and player:GetNumResourceAvailable( resourceID, true ) <= 0
-                            and (not bnw_mode or g_activePlayer:GetHappinessFromLuxury( resourceID ) > 0)
-                            --and g_deal:IsPossibleToTradeItem(g_activePlayerID, playerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
-                            then
-                                table.insert( ourTradeItems, resource.IconString )
-                            end
-                            if usage == ResourceUsageTypes.RESOURCEUSAGE_STRATEGIC
-                            and g_activePlayer:GetNumResourceAvailable( resourceID, false ) > 0
-                            and player:GetCurrentEra() < (GameInfoTypes[resource.AIStopTradingEra] or math.huge)
-                            --and g_deal:IsPossibleToTradeItem(g_activePlayerID, playerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
-                            and player:GetNumResourceAvailable(resourceID, true) <= player:GetNumCities()
-                            then
-                                table.insert( ourTradeItems, resource.IconString )
+
+                            if g_activePlayer:GetNumResourceAvailable( resourceID, false ) >= 1 then
+                                if usage == ResourceUsageTypes.RESOURCEUSAGE_LUXURY
+                                and player:GetNumResourceAvailable( resourceID, true ) <= 0
+                                and (not bnw_mode or g_activePlayer:GetHappinessFromLuxury( resourceID ) > 0)
+                                then
+                                    table.insert( ourTradeItems, resource.IconString )
+                                end
+                                if usage == ResourceUsageTypes.RESOURCEUSAGE_STRATEGIC
+                                and player:GetCurrentEra() < (GameInfoTypes[resource.AIStopTradingEra] or math.huge)
+                                and player:GetNumResourceAvailable(resourceID, true) <= player:GetNumCities()
+                                then
+                                    table.insert( ourTradeItems, resource.IconString )
+                                    --and g_deal:IsPossibleToTradeItem(g_activePlayerID, playerID, TradeableItems.TRADE_ITEM_RESOURCES, resourceID, 1)
+                                end
                             end
                         end
                     end
