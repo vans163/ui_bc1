@@ -215,6 +215,9 @@ Events.ActivePlayerTurnStart.Add( OnActivePlayerTurnStart );
 --TODO: Wonders, Land, FOW
 local iPlayerID = Game.GetActivePlayer();
 local pPlayer = Players[iPlayerID];
+local teamID = pPlayer:GetTeam();
+local pTeam = Teams[teamID];
+
 if (pPlayer ~= nil) then
     if (pPlayer:IsAlive()) then
         for iPlotLoop = 0, Map.GetNumPlots()-1, 1 do
@@ -224,6 +227,18 @@ if (pPlayer ~= nil) then
             --Plot:IsBarbarian()
             --Plot:IsGoody()
             OnResourceAdded( hex.x, hex.y, pPlot:GetImprovementType(), pPlot:GetResourceType() )
+            if pPlot:IsGoody() then
+                print("goodies at "..pPlot:GetX().. " " .. pPlot:GetY());
+                pPlot:ChangeVisibilityCount(pTeam, 1, -1, true, false);
+                --pPlot:SetRevealed(teamID, true, false);
+            end
+            local plotFeatureType = pPlot:GetFeatureType();
+            --3 oasis 4 floodplains
+            -->=7 is wonders
+            if plotFeatureType >= 7 or plotFeatureType == 3 then
+                pPlot:ChangeVisibilityCount(pTeam, 1, -1, true, false);
+            end
+
         end 
     end
 end
