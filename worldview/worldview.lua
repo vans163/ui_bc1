@@ -688,9 +688,11 @@ function MovementRButtonUp( wParam, lParam )
             return true;
         end
 
+        local curTurn = Game.GetGameTurn()
+        
+        local moveTrue = false
         -- Visible enemy... bombardment?
         if (plot:IsVisibleEnemyUnit(pHeadSelectedUnit:GetOwner()) or plot:IsEnemyCity(pHeadSelectedUnit)) then      
-            
             local bNoncombatAllowed = false;
             
             if plot:IsFighting() then
@@ -698,8 +700,6 @@ function MovementRButtonUp( wParam, lParam )
             end
             
             if pHeadSelectedUnit:CanRangeStrikeAt(plotX, plotY, true, bNoncombatAllowed) then
-                print("air strike")
-
                 local iMission;
                 if (pHeadSelectedUnit:GetDomainType() == DomainTypes.DOMAIN_AIR) then
                     iMission = MissionTypes.MISSION_MOVE_TO;        -- Air strikes are moves... yep
@@ -712,25 +712,39 @@ function MovementRButtonUp( wParam, lParam )
                 --Events.ClearHexHighlights();
                 ClearAllHighlights();
 
-                --We have to cache this here because the stupid airplane does not register it used its attack
-                --until its done its long delay
-                local curTurn = Game.GetGameTurn()
-                AirStrikedCache[pHeadSelectedUnit:GetID()] = curTurn
-
-                if (pHeadSelectedUnit:GetDomainType() == DomainTypes.DOMAIN_AIR) then
-                    local unitPlot = pHeadSelectedUnit:GetPlot()
-                    local numUnits = unitPlot:GetNumUnits()
-                    for i = 0, numUnits, 1 do
-                        local plotUnit = unitPlot:GetUnit(i)
-                        if plotUnit:GetDomainType() == DomainTypes.DOMAIN_AIR and AirStrikedCache[plotUnit:GetID()] ~= curTurn then
-                            UI.SelectUnit(plotUnit)
-                            do break end
-                        end
-                    end
-                end
-
-                return true;
+                moveTrue = true
             end
+        end
+
+        if pHeadSelectedUnit:GetDomainType() == DomainTypes.DOMAIN_AIR and not moveTrue then
+            local city = plot:GetPlotCity();
+            if city and city:GetOwner() == pHeadSelectedUnit:GetOwner() then
+                Game.SelectionListGameNetMessage(GameMessageTypes.GAMEMESSAGE_PUSH_MISSION, MissionTypes.MISSION_REBASE, plotX, plotY, 0, false, bShift);
+                UI.SetInterfaceMode(InterfaceModeTypes.INTERFACEMODE_SELECTION);
+                ClearAllHighlights();
+                
+                moveTrue = true
+            end
+        end
+
+        --We have to cache this here because the stupid airplane does not register it used its attack
+        --until its done its long delay
+        if (pHeadSelectedUnit:GetDomainType() == DomainTypes.DOMAIN_AIR) and moveTrue then
+            AirStrikedCache[pHeadSelectedUnit:GetID()] = curTurn
+
+            local unitPlot = pHeadSelectedUnit:GetPlot()
+            local numUnits = unitPlot:GetNumUnits()
+            for i = 0, numUnits, 1 do
+                local plotUnit = unitPlot:GetUnit(i)
+                if plotUnit:GetDomainType() == DomainTypes.DOMAIN_AIR and AirStrikedCache[plotUnit:GetID()] ~= curTurn then
+                    UI.SelectUnit(plotUnit)
+                    do break end
+                end
+            end
+        end
+
+        if moveTrue then
+            return true
         end
 
         -- No visible enemy to bombard, just move
