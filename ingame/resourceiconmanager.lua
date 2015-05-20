@@ -211,8 +211,9 @@ end
 Events.ActivePlayerTurnStart.Add( OnActivePlayerTurnStart );
 
 --Reveal all resources
+--Reveal CS
 --TODO: Add option to enable/disable
---TODO: Wonders, Land, FOW
+--TODO: Land, FOW
 local iPlayerID = Game.GetActivePlayer();
 local pPlayer = Players[iPlayerID];
 local teamID = pPlayer:GetTeam();
@@ -224,21 +225,27 @@ if (pPlayer ~= nil) then
             pPlot = Map.GetPlotByIndex(iPlotLoop);
             hex = ToHexFromGrid{ x=pPlot:GetX(), y=pPlot:GetY() }
             --int   HasBarbarianCamp()
-            --Plot:IsBarbarian()
-            --Plot:IsGoody()
             OnResourceAdded( hex.x, hex.y, pPlot:GetImprovementType(), pPlot:GetResourceType() )
+
+            local revealPlot = false
             if pPlot:IsGoody() then
-                print("goodies at "..pPlot:GetX().. " " .. pPlot:GetY());
-                pPlot:ChangeVisibilityCount(pTeam, 1, -1, true, false);
-                --pPlot:SetRevealed(teamID, true, false);
+                revealPlot = true
             end
-            local plotFeatureType = pPlot:GetFeatureType();
-            --3 oasis 4 floodplains
-            -->=7 is wonders
-            if plotFeatureType >= 7 or plotFeatureType == 3 then
-                pPlot:ChangeVisibilityCount(pTeam, 1, -1, true, false);
+            if pPlot:IsBarbarian() then
+                revealPlot = true
             end
 
+            --3 oasis 4 floodplains
+            -->=7 is wonders
+            local plotFeatureType = pPlot:GetFeatureType();
+            if plotFeatureType >= 7 or plotFeatureType == 3 then
+                revealPlot = true
+            end
+
+            revealPlot = true
+            if revealPlot then
+                pPlot:ChangeVisibilityCount(pTeam, 1, -1, true, false);
+            end
         end 
     end
 end
