@@ -35,6 +35,7 @@
             <Directory>UnitPanel</Directory>
             <Directory>InGame</Directory>
             <Directory>PopUps</Directory>
+            <Directory>WorldView</Directory>
 		</Skin>
 	</UISkin>
 

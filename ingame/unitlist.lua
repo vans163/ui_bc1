@@ -159,6 +159,9 @@ function UpdateDisplay()
             if(unit:IsWork()) then
                 sortEntry.status = "TXT_KEY_ACTION_AUTOMATE_BUILD";
                 instance.Status:SetHide( false );
+            elseif(unit:IsTrade()) then
+                sortEntry.status = "TXT_KEY_ACTION_AUTOMATE_TRADE";
+                instance.Status:SetHide( false );
             else
                 sortEntry.status = "TXT_KEY_ACTION_AUTOMATE_EXPLORE";
                 instance.Status:SetHide( false );

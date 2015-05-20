@@ -31,8 +31,6 @@ local cityRangeAttackString = Locale.ConvertTextKey( "TXT_KEY_CITY_RANGE_ATTACK"
 local cityRangeAttackTooltipString = Locale.ConvertTextKey( "TXT_KEY_CITY_RANGE_ATTACK_TT" );
 local diploVoteString = Locale.ConvertTextKey( "TXT_KEY_DIPLO_VOTE" );
 local diploVoteTooltipString = Locale.ConvertTextKey( "TXT_KEY_DIPLO_VOTE_TT" );
-local minorQuestString = Locale.ConvertTextKey( "TXT_KEY_MINOR_QUEST_BLOCKING" );
-local minorQuestTooltipString = Locale.ConvertTextKey( "TXT_KEY_MINOR_QUEST_BLOCKING_TT" );
 local waitForPlayersString = Locale.ConvertTextKey( "TXT_KEY_WAITING_FOR_PLAYERS" );
 local waitForPlayersTooltipString = Locale.ConvertTextKey( "TXT_KEY_WAITING_FOR_PLAYERS_TT" );
 local nextTurnString = Locale.ConvertTextKey( "TXT_KEY_NEXT_TURN" );
@@ -126,8 +124,18 @@ function OnEndTurnClicked()
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_DIPLO_VOTE
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FREE_ITEMS
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FREE_POLICY
-        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_MINOR_QUEST
-        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_CITY_RANGE_ATTACK) then
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FOUND_PANTHEON
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FOUND_RELIGION
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_ENHANCE_RELIGION
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_ADD_REFORMATION_BELIEF
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_STEAL_TECH
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_MAYA_LONG_COUNT
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FAITH_GREAT_PERSON
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_CITY_RANGE_ATTACK
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_LEAGUE_CALL_FOR_PROPOSALS
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_CHOOSE_ARCHAEOLOGY
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_LEAGUE_CALL_FOR_VOTES
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_CHOOSE_IDEOLOGY) then
         UI.ActivateNotification(blockingNotificationIndex);
     elseif (blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_UNIT_PROMOTION) then
         for v in player:Units() do
@@ -145,8 +153,9 @@ function OnEndTurnClicked()
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_UNITS) then
         local pUnit = player:GetFirstReadyUnit();
         if (pUnit) then
+            print("ready unit 1")
             local pPlot = pUnit:GetPlot();
-            UI.LookAt(pPlot, 0);
+            --UI.LookAt(pPlot, 0);
             UI.SelectUnit(pUnit);
             local hex = ToHexFromGrid( Vector2(pPlot:GetX(), pPlot:GetY() ) );
             Events.GameplayFX(hex.x, hex.y, -1);                
@@ -186,10 +195,20 @@ function OnEndTurnRightClicked()
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_PRODUCTION
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FREE_ITEMS
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FREE_POLICY
-        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_DIPLO_VOTE) then
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_DIPLO_VOTE
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FOUND_PANTHEON
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FOUND_RELIGION
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_ENHANCE_RELIGION
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_ADD_REFORMATION_BELIEF
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_STEAL_TECH
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_MAYA_LONG_COUNT
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FAITH_GREAT_PERSON
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_LEAGUE_CALL_FOR_PROPOSALS
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_CHOOSE_ARCHAEOLOGY
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_LEAGUE_CALL_FOR_VOTES
+        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_CHOOSE_IDEOLOGY) then
         UI.ActivateNotification(blockingNotificationIndex);
-    elseif (blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_POLICY
-        or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_MINOR_QUEST) then
+    elseif (blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_POLICY) then
         UI.RemoveNotification( blockingNotificationIndex );
     elseif (blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_UNIT_PROMOTION) then
         for v in player:Units() do
@@ -207,8 +226,9 @@ function OnEndTurnRightClicked()
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_UNITS) then
         local pUnit = player:GetFirstReadyUnit();
         if (pUnit) then
+            print("ready unit 2")
             local pPlot = pUnit:GetPlot();
-            UI.LookAt(pPlot, 0);
+            --UI.LookAt(pPlot, 0);
             UI.SelectUnit(pUnit);
             local hex = ToHexFromGrid( Vector2(pPlot:GetX(), pPlot:GetY() ) );
             Events.GameplayFX(hex.x, hex.y, -1);                
@@ -249,6 +269,8 @@ function setEndTurnWaiting()
     playersWaiting = 0;
     
     local iActivePlayer = Game.GetActivePlayer();
+    local pActivePlayer = Players[iActivePlayer];
+    local pActiveTeam = Teams[pActivePlayer:GetTeam()];
     if Network.HasSentNetTurnComplete() and PreGame.IsMultiplayerGame() then
         playersWaiting = 1;
     end
@@ -258,7 +280,17 @@ function setEndTurnWaiting()
             local otherPlayer = Players[iPlayerLoop];
             if(otherPlayer ~= nil) then
                 if(otherPlayer:IsHuman() and not otherPlayer:HasReceivedNetTurnComplete()) then
-                    pleaseWait = pleaseWait .. "[NEWLINE]" .. otherPlayer:GetName() .. " (" .. Locale.ConvertTextKey(otherPlayer:GetCivilizationShortDescriptionKey()) .. ")";
+                
+                    -- Determine civilization name of otherPlayer.
+                    local otherCivKey;
+                  local bMetOther = pActiveTeam:IsHasMet(otherPlayer:GetTeam());
+                  if(bMetOther) then
+                        otherCivKey = otherPlayer:GetCivilizationShortDescriptionKey();
+                  else
+                        otherCivKey = "TXT_KEY_POP_VOTE_RESULTS_UNMET_PLAYER";
+                  end
+                     
+                    pleaseWait = pleaseWait .. "[NEWLINE]" .. otherPlayer:GetName() .. " (" .. Locale.ConvertTextKey(otherCivKey) .. ")";
                     playersWaiting = playersWaiting + 1;
                 end
             end
@@ -361,22 +393,6 @@ function OnEndTurnDirty()
         strButtonToolTip = diploVoteTooltipString;
         buttonDisabled = false;
         iFlashingState = FLASHING_END_TURN;
-    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_MINOR_QUEST) then
-        --print("Minor Quest");
-        strEndTurnMessage = minorQuestString;
-        
-        local blockingNotificationIndex = player:GetEndTurnBlockingNotificationIndex();
-                    
-        local numNotifications = player:GetNumNotifications();
-        for i = 0, numNotifications - 1
-        do
-            if (player:GetNotificationIndex(i) == blockingNotificationIndex) then
-                strButtonToolTip = player:GetNotificationStr(i);
-            end
-        end
-        
-        buttonDisabled = false;
-        iFlashingState = FLASHING_END_TURN;
     elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FREE_ITEMS) then
         
         
@@ -392,12 +408,84 @@ function OnEndTurnDirty()
         
         buttonDisabled = false;
         iFlashingState = FLASHING_PRODUCTION;
+        
     elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FREE_POLICY) then
         --print("Choose free policy");
         strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_CHOOSE_POLICY");
         strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_FREE_POLICY");
         buttonDisabled = false;
         iFlashingState = FLASHING_PRODUCTION;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FOUND_PANTHEON) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_SUMMARY_ENOUGH_FAITH_FOR_PANTHEON");
+        strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_ENOUGH_FAITH_FOR_PANTHEON");
+        buttonDisabled = false;
+        iFlashingState = FLASHING_PRODUCTION;   
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FOUND_RELIGION) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_SUMMARY_FOUND_RELIGION");
+        strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_FOUND_RELIGION");
+        buttonDisabled = false;
+        iFlashingState = FLASHING_PRODUCTION;   
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_ENHANCE_RELIGION) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_SUMMARY_ENHANCE_RELIGION");
+        strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_ENHANCE_RELIGION");
+        buttonDisabled = false;
+        iFlashingState = FLASHING_PRODUCTION;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_ADD_REFORMATION_BELIEF) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_SUMMARY_ADD_REFORMATION_BELIEF");
+        strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_ADD_REFORMATION_BELIEF");
+        buttonDisabled = false;
+        iFlashingState = FLASHING_PRODUCTION;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_CHOOSE_ARCHAEOLOGY) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_SUMMARY_CHOOSE_ARCHAEOLOGY");
+        strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_CHOOSE_ARCHAEOLOGY");
+        buttonDisabled = false;
+        iFlashingState = FLASHING_PRODUCTION;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_STEAL_TECH) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_SPY_STEAL_BLOCKING");
+        strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_SPY_STEAL_BLOCKING_TT");
+        buttonDisabled = false;
+        iFlashingState = FLASHING_FREE_TECH;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_MAYA_LONG_COUNT) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_MAYA_LONG_COUNT");
+        strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_MAYA_LONG_COUNT_TT");
+        buttonDisabled = false;
+        iFlashingState = FLASHING_FREE_TECH;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_FAITH_GREAT_PERSON) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_FAITH_GREAT_PERSON");
+        strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_FAITH_GREAT_PERSON_TT");
+        buttonDisabled = false;
+        iFlashingState = FLASHING_FREE_TECH;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_LEAGUE_CALL_FOR_PROPOSALS) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_LEAGUE_PROPOSALS_NEEDED");
+        strButtonToolTip = "";
+        if (Game.GetNumActiveLeagues() > 0) then
+            local league = Game.GetActiveLeague();
+            if (league ~= nil) then
+                strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_LEAGUE_PROPOSALS_NEEDED_TT", league:GetName());
+            end
+        end
+        buttonDisabled = false;
+        iFlashingState = FLASHING_PRODUCTION;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_LEAGUE_CALL_FOR_VOTES) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_LEAGUE_VOTES_NEEDED");
+        strButtonToolTip = "";
+        if (Game.GetNumActiveLeagues() > 0) then
+            local league = Game.GetActiveLeague();
+            if (league ~= nil) then
+                strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_LEAGUE_VOTES_NEEDED_TT", league:GetName());
+            end
+        end
+        buttonDisabled = false;
+        iFlashingState = FLASHING_END_TURN;
+    elseif (EndTurnBlockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_CHOOSE_IDEOLOGY) then
+        strEndTurnMessage = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_SUMMARY_CHOOSE_IDEOLOGY");
+        if (player:GetCurrentEra() > GameInfo.Eras["ERA_INDUSTRIAL"].ID) then
+            strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_CHOOSE_IDEOLOGY_ERA");
+        else
+            strButtonToolTip = Locale.ConvertTextKey("TXT_KEY_NOTIFICATION_CHOOSE_IDEOLOGY_FACTORIES");
+        end
+        buttonDisabled = false;
+        iFlashingState = FLASHING_END_TURN;
     else
         --print("None of the states match");
         if UI.WaitingForRemotePlayers() then
@@ -434,16 +522,26 @@ function OnEndTurnBlockingChanged(ePrevEndTurnBlockingType, eNewEndTurnBlockingT
     local pPlayer = Players[Game.GetActivePlayer()];
     if (pPlayer ~= nil) then
         if pPlayer:IsTurnActive() then
+        
+            print("unit cycle")
             -- If they have auto-unit-cycling off, then don't change the selection.
             if (not OptionsManager.GetAutoUnitCycle()) then
                 return;
             end
+            
+            local pSelectedUnit = UI.GetHeadSelectedUnit();
+            if (pSelectedUnit ~= nil) then
+                if (not pSelectedUnit:IsAutomated() and not pSelectedUnit:IsDelayedDeath() and pSelectedUnit:IsReadyToMove()) then
+                    return;
+                end
+            end
+            
             -- GetFirstReadyUnit can return a unit that has automation and we don't want to select and center on that, manually look for a unit     
             for pUnit in pPlayer:Units() do
                 if (pUnit ~= nil) then
                     if (not pUnit:IsAutomated() and not pUnit:IsDelayedDeath() and pUnit:IsReadyToMove()) then
                         local pPlot = pUnit:GetPlot();
-                        UI.LookAt(pPlot, 0);
+                        --UI.LookAt(pPlot, 0);
                         UI.SelectUnit(pUnit);
                         return;
                     end
@@ -453,5 +551,3 @@ function OnEndTurnBlockingChanged(ePrevEndTurnBlockingType, eNewEndTurnBlockingT
     end
 end
 Events.EndTurnBlockingChanged.Add( OnEndTurnBlockingChanged );
-
-
