@@ -2348,7 +2348,7 @@ function()
 	-- Try and re-select the last unit selected
 	if not UI.GetHeadSelectedUnit() and UI.GetLastSelectedUnit() then
 		UI.SelectUnit(UI.GetLastSelectedUnit())
-		UI.LookAtSelectionPlot()
+		--UI.LookAtSelectionPlot()
 	end
 	g_isViewingMode = true
 	return UI.SetCityScreenViewingMode(false)

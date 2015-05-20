@@ -54,7 +54,7 @@ function UnitClicked( unitID )
     local pSelectedUnit = UI:GetHeadSelectedUnit();
     if( pSelectedUnit ~= nil and
         pSelectedUnit:GetID() == unitID ) then
-        UI.LookAtSelectionPlot(0);
+        --UI.LookAtSelectionPlot(0);
     else
         Events.SerialEventUnitFlagSelected( Game:GetActivePlayer(), unitID );
     end
