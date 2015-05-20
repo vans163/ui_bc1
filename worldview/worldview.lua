@@ -638,7 +638,7 @@ function ClearAllHighlights()
     Events.ClearHexHighlightStyle("ValidFireTargetBorder");
 end
 
-
+local AirStrikedCache = {}
 function MovementRButtonUp( wParam, lParam )
     if( bEatNextUp == true ) then
         bEatNextUp = false;
@@ -698,7 +698,8 @@ function MovementRButtonUp( wParam, lParam )
             end
             
             if pHeadSelectedUnit:CanRangeStrikeAt(plotX, plotY, true, bNoncombatAllowed) then
-                
+                print("air strike")
+
                 local iMission;
                 if (pHeadSelectedUnit:GetDomainType() == DomainTypes.DOMAIN_AIR) then
                     iMission = MissionTypes.MISSION_MOVE_TO;        -- Air strikes are moves... yep
@@ -710,6 +711,24 @@ function MovementRButtonUp( wParam, lParam )
                 UI.SetInterfaceMode(InterfaceModeTypes.INTERFACEMODE_SELECTION);
                 --Events.ClearHexHighlights();
                 ClearAllHighlights();
+
+                --We have to cache this here because the stupid airplane does not register it used its attack
+                --until its done its long delay
+                local curTurn = Game.GetGameTurn()
+                AirStrikedCache[pHeadSelectedUnit:GetID()] = curTurn
+
+                if (pHeadSelectedUnit:GetDomainType() == DomainTypes.DOMAIN_AIR) then
+                    local unitPlot = pHeadSelectedUnit:GetPlot()
+                    local numUnits = unitPlot:GetNumUnits()
+                    for i = 0, numUnits, 1 do
+                        local plotUnit = unitPlot:GetUnit(i)
+                        if plotUnit:GetDomainType() == DomainTypes.DOMAIN_AIR and AirStrikedCache[plotUnit:GetID()] ~= curTurn then
+                            UI.SelectUnit(plotUnit)
+                            do break end
+                        end
+                    end
+                end
+
                 return true;
             end
         end
