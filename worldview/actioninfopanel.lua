@@ -153,9 +153,8 @@ function OnEndTurnClicked()
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_UNITS) then
         local pUnit = player:GetFirstReadyUnit();
         if (pUnit) then
-            print("ready unit 1")
             local pPlot = pUnit:GetPlot();
-            --UI.LookAt(pPlot, 0);
+            UI.LookAt(pPlot, 0);
             UI.SelectUnit(pUnit);
             local hex = ToHexFromGrid( Vector2(pPlot:GetX(), pPlot:GetY() ) );
             Events.GameplayFX(hex.x, hex.y, -1);                
@@ -186,6 +185,24 @@ function OnEndTurnRightClicked()
         print("Player's turn not active");
         return;
     end
+
+    local nextUnit = player:Units()
+    local unit
+    repeat 
+        unit = nextUnit(player)
+        local activityType = unit:GetActivityType()
+
+        if unit:IsAutomated() 
+            or activityType == ActivityTypes.ACTIVITY_HEAL 
+            or activityType == ActivityTypes.ACTIVITY_SENTRY 
+            or activityType == ActivityTypes.ACTIVITY_SLEEP
+            or activityType == ActivityTypes.ACTIVITY_HOLD
+        then
+        else
+            UI.SelectUnit(unit);
+            Game.SelectionListGameNetMessage(GameMessageTypes.GAMEMESSAGE_PUSH_MISSION, GameInfoTypes.MISSION_SKIP, unit:GetID(), 0, 0, false);
+        end
+    until not unit
 
     local blockingType = player:GetEndTurnBlockingType();
     local blockingNotificationIndex = player:GetEndTurnBlockingNotificationIndex();
@@ -226,9 +243,8 @@ function OnEndTurnRightClicked()
         or blockingType == EndTurnBlockingTypes.ENDTURN_BLOCKING_UNITS) then
         local pUnit = player:GetFirstReadyUnit();
         if (pUnit) then
-            print("ready unit 2")
             local pPlot = pUnit:GetPlot();
-            --UI.LookAt(pPlot, 0);
+            UI.LookAt(pPlot, 0);
             UI.SelectUnit(pUnit);
             local hex = ToHexFromGrid( Vector2(pPlot:GetX(), pPlot:GetY() ) );
             Events.GameplayFX(hex.x, hex.y, -1);                
@@ -541,7 +557,7 @@ function OnEndTurnBlockingChanged(ePrevEndTurnBlockingType, eNewEndTurnBlockingT
                 if (pUnit ~= nil) then
                     if (not pUnit:IsAutomated() and not pUnit:IsDelayedDeath() and pUnit:IsReadyToMove()) then
                         local pPlot = pUnit:GetPlot();
-                        --UI.LookAt(pPlot, 0);
+                        UI.LookAt(pPlot, 0);
                         UI.SelectUnit(pUnit);
                         return;
                     end

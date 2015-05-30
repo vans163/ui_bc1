@@ -718,7 +718,21 @@ function MovementRButtonUp( wParam, lParam )
 
         if pHeadSelectedUnit:GetDomainType() == DomainTypes.DOMAIN_AIR and not moveTrue then
             local city = plot:GetPlotCity();
+            local rebase = false
             if city and city:GetOwner() == pHeadSelectedUnit:GetOwner() then
+                rebase = true
+            end
+
+            local numUnits = plot:GetNumUnits();
+            for i = 0, numUnits, 1 do
+                local plotUnit = plot:GetUnit(i)
+                if plotUnit ~= nil and plotUnit:GetUnitType() == GameInfo.Units.UNIT_CARRIER.ID then
+                    rebase = true
+                    do break end
+                end
+            end
+
+            if rebase then
                 Game.SelectionListGameNetMessage(GameMessageTypes.GAMEMESSAGE_PUSH_MISSION, MissionTypes.MISSION_REBASE, plotX, plotY, 0, false, bShift);
                 UI.SetInterfaceMode(InterfaceModeTypes.INTERFACEMODE_SELECTION);
                 ClearAllHighlights();
@@ -735,8 +749,9 @@ function MovementRButtonUp( wParam, lParam )
             local unitPlot = pHeadSelectedUnit:GetPlot()
             local numUnits = unitPlot:GetNumUnits()
             for i = 0, numUnits, 1 do
+
                 local plotUnit = unitPlot:GetUnit(i)
-                if plotUnit:GetDomainType() == DomainTypes.DOMAIN_AIR and AirStrikedCache[plotUnit:GetID()] ~= curTurn then
+                if plotUnit ~= nil and plotUnit:GetDomainType() == DomainTypes.DOMAIN_AIR and plotUnit:CanRangeStrikeAt(plotX, plotY, true, false) and AirStrikedCache[plotUnit:GetID()] ~= curTurn then
                     UI.SelectUnit(plotUnit)
                     do break end
                 end
