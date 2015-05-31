@@ -1181,15 +1181,15 @@ g_civListInstanceCallBacks = {-- the callback function table names need to match
 		[Mouse.eRClick] = function( playerID )
 			local player = Players[ playerID ]
 			if player then
-				if player:IsMinorCiv() then
+				--if player:IsMinorCiv() then
 					local city = player:GetCapitalCity()
 					local plot = city and city:Plot()
 					if plot and not g_leaderMode then
 						UI.LookAt(plot, 0)
 					end
-				else
-					Events.SearchForPediaEntry( player:GetCivilizationShortDescription() )
-				end
+				--else
+				--	Events.SearchForPediaEntry( player:GetCivilizationShortDescription() )
+				--end
 			end
 		end;
 		[Mouse.eMouseEnter] = nil;

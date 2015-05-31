@@ -746,6 +746,9 @@ function MovementRButtonUp( wParam, lParam )
         if (pHeadSelectedUnit:GetDomainType() == DomainTypes.DOMAIN_AIR) and moveTrue then
             AirStrikedCache[pHeadSelectedUnit:GetID()] = curTurn
 
+ --       local promotion = GameInfo.UnitPromotions[ row.PromotionType ]
+--local id = GameInfo.UnitPromotions.PROMOTION_LOGISTICS.ID
+
             local unitPlot = pHeadSelectedUnit:GetPlot()
             local numUnits = unitPlot:GetNumUnits()
             for i = 0, numUnits, 1 do

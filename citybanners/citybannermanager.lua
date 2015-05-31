@@ -993,8 +993,14 @@ local function RefreshCityBannersNow()
 						cityBanner = {}
 						ContextPtr:BuildInstanceForControl( "OtherCityBanner", cityBanner, Controls.CityBanners )
 						cityBanner.QuestIcons:RegisterCallback( Mouse.eLClick, OnQuestInfoClicked )
+
+                        cityBanner.CityBannerProductionButton:RegisterCallback( Mouse.eMouseEnter, OnMouseEnter )
+
 						InitBannerCallbacks( cityBanner )
 					end
+                    cityBanner.CityBannerProductionButton:SetVoid1( plotIndex )
+                    cityBanner.CityBannerProductionButton:SetDisabled( true )
+
 					cityBanner.QuestIcons:SetVoid1( plotIndex )
 				end
 
@@ -1268,6 +1274,55 @@ local function RefreshCityBannersNow()
 			else
 				local isMinorCiv = cityOwner:IsMinorCiv()
 				local allyID, ally
+
+
+                local productionPerTurn100 = city:GetCurrentProductionDifferenceTimes100(false, false)  -- food = false, overflow = false
+                local productionStored100 = city:GetProductionTimes100() + city:GetCurrentProductionDifferenceTimes100(false, true) - productionPerTurn100
+                local productionNeeded100 = city:GetProductionNeeded() * 100
+                local productionStoredPercent = 0
+                local productionStoredNextTurnPercent = 0
+
+                if productionNeeded100 > 0 then
+                    productionStoredPercent = productionStored100 / productionNeeded100
+                    productionStoredNextTurnPercent = (productionStored100 + productionPerTurn100) / productionNeeded100
+                end
+
+                cityBanner.ProductionBar:SetPercent( math.max(math.min( productionStoredPercent, 1),0))
+                cityBanner.ProductionBarShadow:SetPercent( math.max(math.min( productionStoredNextTurnPercent, 1),0))
+
+                -- Update Production Time
+                if city:IsProduction()
+                    and not city:IsProductionProcess()
+                    and productionPerTurn100 > 0
+                then
+                    cityBanner.BuildGrowth:SetText( city:GetProductionTurnsLeft() )
+                else
+                    cityBanner.BuildGrowth:SetText( "-" )
+                end
+
+                -- Update Production icon
+                local unitProductionID = city:GetProductionUnit()
+                local buildingProductionID = city:GetProductionBuilding()
+                local projectProductionID = city:GetProductionProject()
+                local processProductionID = city:GetProductionProcess()
+                local item = nil
+
+                if unitProductionID ~= -1 then
+                    item = GameInfo.Units[unitProductionID]
+                elseif buildingProductionID ~= -1 then
+                    item = GameInfo.Buildings[buildingProductionID]
+                elseif projectProductionID ~= -1 then
+                    item = GameInfo.Projects[projectProductionID]
+                elseif processProductionID ~= -1 then
+                    item = GameInfo.Processes[processProductionID]
+                end
+                -- really should have an error texture
+
+                cityBanner.CityBannerProductionImage:SetHide( not( item and
+                    IconHookup( item.PortraitIndex, 45, item.IconAtlas, cityBanner.CityBannerProductionImage )))
+                cityBanner.CityBannerProductionButton:SetDisabled( not isActivePlayerCity )
+
+
 
 				if isMinorCiv then
 					-- Update Quests

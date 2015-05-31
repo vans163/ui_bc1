@@ -175,6 +175,20 @@
 						<Image ID="Pledge2" Anchor="R,B" Offset="-5,-2" Size="22,22" TextureOffset="176,0" Texture="FontIcons.dds" Hidden="1" ToolTip="TXT_KEY_POP_CSTATE_PLEDGE_TO_PROTECT"/>
 					</Image>
 				</Container>
+
+                <!-- Production -->
+                <Label ID="BuildGrowth" Anchor="C,C" Offset="0,7" Color0="Production,255" Color1="0,0,0,200" Font="TwCenMT14" FontStyle="Stroke" ForceNonIME="1"/>
+                <Button ID="CityBannerProductionButton" NoStateChange="1" Anchor="C,C" Size="38,48">
+                    <Image Anchor="L,C" Offset="6,0" Size="48,64" Texture="CityBannerProductionBackground.dds"/>
+                    <Image ID="CityBannerProductionImage" Anchor="L,C" Size="45,45" Texture="CityBannerProductionImage.dds"/>
+                    <Box Anchor="L,C" Size="6,30" Color="0,0,0,255">
+                        <Bar ID="ProductionBarShadow" Anchor="C,B" Size="4,30" FGColor="Production,128" Direction="Up"/>
+                        <Bar ID="ProductionBar" Anchor="C,B" Size="4,30" FGColor="Production,255" Direction="Up"/>
+                        <Box Anchor="L,C" Size="3,30" Color="0,0,0,64"/>
+                        <Box Anchor="R,C" Offset="1,0" Size="1,30" Color="255,255,0,64"/>
+                    </Box>
+                </Button>
+                
 			</Stack>
 			<!-- City Health Bar -->
 			<Box ID="CityBannerHealthBarBase" Anchor="C,C" Offset="0,-12" Size="100,5" Color="0,0,0,255">
