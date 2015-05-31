@@ -229,10 +229,10 @@ if (pPlayer ~= nil) then
 
             local revealPlot = false
             if pPlot:IsGoody() then
-                revealPlot = true
+                --revealPlot = true
             end
             if pPlot:IsBarbarian() then
-                revealPlot = true
+                --revealPlot = true
             end
 
             --3 oasis 4 floodplains

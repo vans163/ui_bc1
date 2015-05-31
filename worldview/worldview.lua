@@ -751,7 +751,15 @@ function MovementRButtonUp( wParam, lParam )
             for i = 0, numUnits, 1 do
 
                 local plotUnit = unitPlot:GetUnit(i)
-                if plotUnit ~= nil and plotUnit:GetDomainType() == DomainTypes.DOMAIN_AIR and plotUnit:CanRangeStrikeAt(plotX, plotY, true, false) and AirStrikedCache[plotUnit:GetID()] ~= curTurn then
+                local activityType = plotUnit:GetActivityType()
+                if plotUnit ~= nil and plotUnit:GetDomainType() == DomainTypes.DOMAIN_AIR 
+                    and plotUnit:CanRangeStrikeAt(plotX, plotY, true, false) 
+                    and AirStrikedCache[plotUnit:GetID()] ~= curTurn 
+                    and activityType ~= ActivityTypes.ACTIVITY_HEAL
+                    and activityType ~= ActivityTypes.ACTIVITY_HOLD
+                    and activityType ~= ActivityTypes.ACTIVITY_SLEEP
+                    and activityType ~= ActivityTypes.ACTIVITY_SENTRY
+                    then
                     UI.SelectUnit(plotUnit)
                     do break end
                 end

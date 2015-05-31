@@ -197,6 +197,7 @@ function OnEndTurnRightClicked()
             or activityType == ActivityTypes.ACTIVITY_SENTRY 
             or activityType == ActivityTypes.ACTIVITY_SLEEP
             or activityType == ActivityTypes.ACTIVITY_HOLD
+            or activityType == ActivityTypes.ACTIVITY_MISSION
         then
         else
             UI.SelectUnit(unit);
